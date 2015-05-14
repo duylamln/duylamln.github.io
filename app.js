@@ -18,7 +18,7 @@ angular.module('myApp', [
     $stateProvider
         .state('master', {
             url: '',
-            templateUrl: 'shared/layout.html',
+            templateUrl: 'shared/templates/layout.html',
         })
         .state('master.home', {
             url: '/',
