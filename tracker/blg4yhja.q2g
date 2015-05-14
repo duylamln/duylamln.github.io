@@ -1,0 +1,52 @@
+﻿<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="h4" ng-bind="trackerDetailCtrl.selectedDate.format('dddd MMM D, YYYY')"></span>
+    </div>
+    <div class="panel-body" cg-busy="trackerDetailCtrl.promise">
+        <div class="row">
+            <div class="col-lg-6">
+                <select class="form-control" ng-model="tracker.action" ng-options="item for item in trackerDetailCtrl.appSettings.actions"></select>
+            </div>
+
+        </div>
+        <button type="button" ng-click="addTracker()"><span class="glyphicon-plus"></span> Add Tracker</button>
+        <table class="table tracker-detail">
+            <thead>
+                <tr>
+                    <th class="tracker-detail-action">Action</th>
+                    <th class="tracker-detail-time">Time</th>
+                    <th class="tracker-detail-button"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="tracker in trackerDetailCtrl.trackers">
+                    <td>
+                        <select class="form-control" ng-show="tracker.isEditing" ng-model="tracker.action" ng-options="item for item in trackerDetailCtrl.appSettings.actions"></select>
+                        <span ng-bind="tracker.action" ng-show="!tracker.isEditing"></span>
+                        
+                    </td>
+                    <td class="tracker-detail-time">
+                        <span ng-bind="tracker.date | date:'HH:mm'" ng-if="!tracker.isEditing">
+                        </span>
+                        
+                        <!--<timepicker ng-if="tracker.isEditing" hour-step="1" minute-step="1" ng-model="trackerDetailCtrl.today" show-meridian="false"></timepicker>-->
+
+                    </td>
+                    <td class="tracker-detail-button">
+                        <!-- view mode -->
+                        <div ng-if="tracker.isEditing !== true">
+                            <button type="button" class="btn btn-success" ng-click="trackerDetailCtrl.switchEditMode(tracker)"><span class="glyphicon glyphicon-edit"></span> Edit</button>
+                            <button type="button" class="btn btn-danger" ng-cick="trackerDetailCtrl.removeTracker(tracker)"><span class="glyphicon glyphicon-remove"></span> Delete</button>
+                        </div>
+                        <!-- editing mode -->
+                        <div ng-if="tracker.isEditing === true">
+                            <button type="button" class="btn btn-success" ng-click="trackerDetailCtrl.saveTracker(tracker)"><span class="glyphicon glyphicon-save"></span> Save</button>
+                            <button type="button" class="btn btn-danger" ng-click="trackerDetailCtrl.cancelChangesTracker(tracker)"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<pre>{{trackerDetailCtrl.trackers | json}}</pre>
