@@ -4,6 +4,7 @@
 
     function VocabularyCreationController($scope, vocabularyService, VocabularyModel) {
         var model = this;
+        var isUpdatesWord = $scope.$stateParams.id != undefined;
         //properties
         model.isOpendAddVocabularyRegion = false;
         model.newVocabularyModel = null;
@@ -12,11 +13,11 @@
         model.addMoreSentences = addMoreSentences;
         model.removeSentence = removeSentence;
         model.saveVocabulary = saveVocabulary;
-
+        
         activate();
         
         function activate() {
-            if ($scope.$stateParams.id) {
+            if (isUpdatesWord) {
                 vocabularyService.getVocabularyById($scope.$stateParams.id)
                     .then(function (response) {
                         if (response && response.length > 0) {
@@ -49,14 +50,22 @@
 
         function saveVocabulary() {
             if (!model.newVocabularyModel) return;
-            vocabularyService.addVocabulary(model.newVocabularyModel)
-                .then(function (response) {
-                    
-                    toastr.success("Add new vocabulary successfully!");
-                    model.newVocabularyModel = new VocabularyModel();
-                    model.newVocabularyModel.sentences.push({ value: '' });
-                    $scope.$apply();
-                });
+            if (isUpdatesWord) {
+                vocabularyService.updateVocabulary(model.newVocabularyModel)
+                    .then(function (response) {
+                        toastr.success("Update vocabulary successfully!");
+                        $scope.$state.go('master.vocabulary');
+                    });
+            } else {
+                vocabularyService.addVocabulary(model.newVocabularyModel)
+                    .then(function(response) {
+
+                        toastr.success("Add new vocabulary successfully!");
+                        model.newVocabularyModel = new VocabularyModel();
+                        model.newVocabularyModel.sentences.push({ value: '' });
+                        $scope.$apply();
+                    });
+            }
         }
     }
 })(angular.module('myApp.vocabulary'))

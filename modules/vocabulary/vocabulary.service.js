@@ -8,12 +8,15 @@
         };
         this.init();
 
-        this.getVocabularys = function (pageIndex, pageSize) {
+        this.getVocabularys = function (searchText, pageIndex, pageSize) {
             var Tracker = Parse.Object.extend("Vocabulary");
             var query = new Parse.Query(Tracker);
             query.addDescending("createdAt");
             query.skip(pageIndex * pageSize);
             query.limit(pageSize);
+            if (searchText && searchText != '') {
+                query.contains("Word", searchText);
+            }
             return query.find();
 
         };
@@ -45,11 +48,14 @@
             var Vocabulary = Parse.Object.extend('Vocabulary');
             var vocaularyParseModel = new Vocabulary();
 
-            vocaularyParseModel.set('objectId', vocabularyModel.objectId);
+            vocaularyParseModel.set('objectId', vocabularyModel.id);
             vocaularyParseModel.set('Word', vocabularyModel.word);
             vocaularyParseModel.set('Transcribe', vocabularyModel.transcribe);
             vocaularyParseModel.set('Meaning', vocabularyModel.meaning);
-            vocaularyParseModel.set('Sentences', vocabularyModel.sentences);
+            var sentences = _.map(vocabularyModel.sentences, function (item) {
+                return { value: item.value };
+            });
+            vocaularyParseModel.set('Sentences', sentences);
 
             return vocaularyParseModel.save();
         };
