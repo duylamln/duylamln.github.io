@@ -16,35 +16,33 @@
 
         $scope.$watch(function() {
             return model.searchText;
-        }, function (newValue) {
-            if (!newValue || newValue == '') return;
+        }, function (newValue, oldValue) {
+            if (newValue == undefined || newValue == oldValue) return;
             searchVocabularyByName(newValue);
         });
         function loadMoreVocabularies() {
             model.promise = $q.defer();
-            vocabularyService.getVocabularys(model.searchText, pageIndex, pageSize)
-                .then(function (response) {
-                    _.each(response, function (item) {
-                        model.vocabularies.push(new VocabularyModel(item));
-                    });
-                    pageIndex += 1;
-                    model.promise.resolve();
-                    $scope.$apply();
-                });
+            getVocabularies();
         }
 
-        function searchVocabularyByName(newValue) {
+        function searchVocabularyByName() {
             model.promise = $q.defer();
             pageIndex = 0;
             model.vocabularies.length = 0;
-            vocabularyService.getVocabularys(model.searchText, pageIndex, pageSize)
-                .then(function (response) {
-                    _.each(response, function (item) {
-                        model.vocabularies.push(new VocabularyModel(item));
-                    });
-                    pageIndex += 1;
+            getVocabularies();
+        }
+
+        function getVocabularies() {
+            vocabularyService.getVocabularies(model.searchText, pageIndex, pageSize)
+                .then(function(response) {
+                    if (response.length > 0) {
+                        _.each(response, function(item) {
+                            model.vocabularies.push(new VocabularyModel(item));
+                        });
+                        pageIndex += 1;
+                        $scope.$apply();
+                    }
                     model.promise.resolve();
-                    $scope.$apply();
                 });
         }
 

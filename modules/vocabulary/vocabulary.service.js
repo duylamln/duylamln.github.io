@@ -8,13 +8,13 @@
         };
         this.init();
 
-        this.getVocabularys = function (searchText, pageIndex, pageSize) {
+        this.getVocabularies = function (searchText, pageIndex, pageSize) {
             var Tracker = Parse.Object.extend("Vocabulary");
             var query = new Parse.Query(Tracker);
             query.addDescending("createdAt");
             query.skip(pageIndex * pageSize);
             query.limit(pageSize);
-            if (searchText && searchText != '') {
+            if (searchText) {
                 query.contains("Word", searchText);
             }
             return query.find();
