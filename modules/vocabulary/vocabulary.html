@@ -1,0 +1,13 @@
+<div class="row" cg-busy="model.promise" infinite-scroll='model.loadMoreVocabularies()'>
+    <div class="col-sm-12">
+        <div class="page-header vocabulary" ng-repeat="vocabulary in model.vocabularies">
+            <p class="word">{{vocabulary.word}} <small ng-bind="vocabulary.transcribe"></small>   <a class="pull-right glyphicon glyphicon-pencil word-edit" ng-click="model.editVocabulary(vocabulary)"></a></p>
+            <p class="meaning">{{vocabulary.meaning}}</p>
+            <ul>
+                <li ng-repeat="sentence in vocabulary.sentences">
+                    <p class="sentence">{{sentence.value}}</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

@@ -4,28 +4,24 @@
 angular.module('myApp', [
   'ui.router',
   'myApp.version',
-  'myApp.tracker',
+    'infinite-scroll',
   'ngAnimate',
-  'cgBusy'
+  'cgBusy',
+    'myApp.vocabulary'
 ])
     .run(['$rootScope', '$state', '$stateParams', function ($rootScope, $state, $stateParams) {
         $rootScope.$state = $state;
         $rootScope.$stateParams = $stateParams;
     }])
 .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
-    $urlRouterProvider.otherwise("/");
+    $urlRouterProvider.otherwise("/vocabulary");
 
     $stateProvider
         .state('master', {
             url: '',
             templateUrl: 'shared/templates/layout.html',
         })
-        .state('master.home', {
-            url: '/',
-            template: '<p>This is Home page</p>'
-
-        })
-        .state('/notfound', { url: '/notfound', templateUrl: 'not-found.html' })
+        .state('/notfound', { url: '/notfound', templateUrl: 'not-found.html' });
     //.otherwise({ redirectTo: '/view1' });
 }])
 .constant('appSettings', {

@@ -29,32 +29,57 @@
             padding: 0;
         }
 
-/*tracker table*/
-.tracker > thead > tr > th {
-    width: 25%;
+.required:after {
+    content: " *";
+    color: red;
 }
 
-    .tracker > thead > tr > th:not(:first-child) {
-        text-align: center;
+.ng-invalid {
+    border-color: red !important;
+}
+/*Vocabulary*/
+.vocabulary {
+    padding: 50px 10px;
+}
+
+    .vocabulary:first-child {
+        padding-top: 20px;
     }
 
-.tracker > tbody > tr {
-    cursor: pointer;
-}
-
-    .tracker > tbody > tr > td:not(:first-child) {
-        text-align: center;
+    .vocabulary:hover {
+        background-color: aliceblue;
     }
 
-/*tracker detail table*/
-.tracker-detail tr td {
-    vertical-align: middle !important;
-}
+    .vocabulary:hover .word .word-edit {
+        display: block;
+    }
 
-.tracker-detail-action {
-    width: 40%;
-}
+    .vocabulary p {
+        margin-bottom: 40px;
+    }
 
-.tracker-detail-time {
-    width: 30%;
-}
+    .vocabulary .word {
+        font-size: 50px;
+        font-weight: bold;
+    }
+
+    .vocabulary .word .word-edit {
+        font-size: 25px;
+        display: none;
+    }
+
+        .vocabulary .word small {
+            font-size: 30px;
+            font-weight: 400;
+            line-height: 1;
+            color: #777;
+        }
+
+    .vocabulary .meaning {
+        font-size: 20px;
+    }
+
+    .vocabulary .sentence {
+        font-size: 35px;
+        font-style: italic;
+    }
