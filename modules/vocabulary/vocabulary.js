@@ -5,7 +5,7 @@
     function VocabularyController($scope, $q, vocabularyService, VocabularyModel) {
         var model = this;
         var pageIndex = 0;
-        var pageSize = 5;
+        var pageSize = 20;
         //properties
         model.vocabularies = [];
         model.promise = null;
