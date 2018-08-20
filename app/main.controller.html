@@ -1,0 +1,19 @@
+﻿<div style="margin-top: 50px">
+    <blockquote class="blockquote text-center" style="margin-bottom: 60px">
+        <p class="mb-0 h1">Current sprint: {{model.currentSprint.title}}</p>
+        <p class="mb-0 h5">
+            <small>{{model.currentSprint.dayRange}}</small>
+        </p>
+    </blockquote>
+    <div class="row">
+        <div class="col-1 text-right" style="margin-top: 11%">
+            <a href="#" class="alert-link" ng-click="model.prevSprint()">prev</a>
+        </div>
+        <div class="col-10">
+            <timeline activities="model.currentSprint.sprintActivities"></timeline>
+        </div>
+        <div class="col-1 text-left" style="margin-top: 11%">
+            <a href="#" class="alert-link" ng-click="model.nextSprint()">next</a>
+        </div>
+    </div>
+</div>
