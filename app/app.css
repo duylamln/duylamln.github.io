@@ -1,28 +1,28 @@
 /* app css stylesheet */
 
 .menu {
-  list-style: none;
-  border-bottom: 0.1em solid black;
-  margin-bottom: 2em;
-  padding: 0 0 0.5em;
+    list-style: none;
+    border-bottom: 0.1em solid black;
+    margin-bottom: 2em;
+    padding: 0 0 0.5em;
 }
 
-.menu:before {
-  content: "[";
-}
+    .menu:before {
+        content: "[";
+    }
 
-.menu:after {
-  content: "]";
-}
+    .menu:after {
+        content: "]";
+    }
 
-.menu > li {
-  display: inline;
-}
+    .menu > li {
+        display: inline;
+    }
 
-.menu > li + li:before {
-  content: "|";
-  padding-right: 0.3em;
-}
+        .menu > li + li:before {
+            content: "|";
+            padding-right: 0.3em;
+        }
 
 .roadmap.roadmap--orientation-auto .roadmap__events__event.active:after, .roadmap.roadmap--orientation-auto .roadmap__events__event.active:before {
     background-color: red;
@@ -31,4 +31,10 @@
 
 .roadmap.roadmap--orientation-auto {
     width: 100% !important;
+}
+
+@media screen and (max-width: 992px) {
+    .roadmap.roadmap--orientation-auto .roadmap__events__event:nth-child(odd) .event {
+        top: 0 !important;
+    }
 }
