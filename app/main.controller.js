@@ -4,41 +4,46 @@
     myController.$inject = ["appValues", "$scope"];
     function myController(appValues, $scope) {
         var model = this;
-        model.prevSprint = prevSprint;
-        model.nextSprint = nextSprint;
+        model.goPrevSprint = goPrevSprint;
+        model.goNextSprint = goNextSprint;
+        var today = moment();
+        init(today);
 
-        var date = moment();
+        function init(date) {
+            today = date;
+            var nextSprintDate = moment(today).add(2, "weeks");
+            var lastSprintDate = moment(today).subtract(2, "weeks");
 
-        model.currentSprint = getCurrentSprint(date, appValues);
+            model.currentSprint = getSprintByDate(today, appValues);
+            model.nextSprint = getSprintByDate(nextSprintDate, appValues);
+            model.lastSprint = getSprintByDate(lastSprintDate, appValues);
 
-
-        function prevSprint() {
-            var newDate = moment(date).subtract(2, "weeks");
-            moveSprint(newDate);
-        }
-
-        function nextSprint() {
-            var newDate = moment(date).add(2, "weeks");
-            moveSprint(newDate);
-        }
-
-        function moveSprint(newDate) {
-            var temp = getCurrentSprint(newDate, appValues);
-            if (temp) {
-                model.currentSprint = temp;
-                date = newDate;
+            if (model.currentSprint && model.currentSprint.sprintActivities && model.nextSprint) {
+                _.each(model.currentSprint.sprintActivities, function (item) {
+                    item.content = item.content.replace("next sprint", model.nextSprint.title);
+                });
             }
+        }
+
+        function goPrevSprint() {
+            var newDate = moment(today).subtract(2, "weeks");
+            init(newDate);
+        }
+
+        function goNextSprint() {
+            var newDate = moment(today).add(2, "weeks");
+            init(newDate);
         }
     }
 
-    function getCurrentSprint(date, appValues) {
-        var currentSprint = _.find(appValues.sprintDefine, function (item) {
+    function getSprintByDate(date, appValues) {
+        var sprint = _.find(appValues.sprintDefine, function (item) {
             return item.from <= date && date <= item.to;
         });
-        if (currentSprint) {
-            currentSprint.dayRange = currentSprint.from.format("DD/MM/YYYY") + " - " + currentSprint.to.format("DD/MM/YYYY");
-            currentSprint.sprintActivities = buildSprintActivities(currentSprint, appValues);
-            return currentSprint;
+        if (sprint) {
+            sprint.dayRange = sprint.from.format("DD/MM/YYYY") + " - " + sprint.to.format("DD/MM/YYYY");
+            sprint.sprintActivities = buildSprintActivities(sprint, appValues);
+            return sprint;
         }
         return undefined;
     }
@@ -52,14 +57,14 @@
             if (moment(start).day() !== 0 && moment(start).day() !== 6) sprintDays.push(start);
             start = moment(start).add(1, "days");
         }
-
+        
         return _.map(sprintDays, function (item) {
             var week = currentSprint.from <= item && item <= currentSprint.endWeek1 ? 1 : 2;
             var weekDay = moment(item).day();
             var content = _.find(activityDefine, function (activity) {
                 return activity.week === week && activity.day.indexOf(weekDay) > -1;
-
             }).content;
+            
             return {
                 date: item,
                 title: item.format("ddd - DD/MM"),

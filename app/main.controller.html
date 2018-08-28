@@ -7,13 +7,13 @@
     </blockquote>
     <div class="row">
         <div class="col-1 text-right" style="margin-top: 11%">
-            <a href="#" class="alert-link" ng-click="model.prevSprint()">prev</a>
+            <a href="#" class="alert-link" ng-click="model.goPrevSprint()" ng-if="!!model.lastSprint">{{model.lastSprint.title}}<strong> <<</strong></a>
         </div>
         <div class="col-10">
             <timeline activities="model.currentSprint.sprintActivities"></timeline>
         </div>
         <div class="col-1 text-left" style="margin-top: 11%">
-            <a href="#" class="alert-link" ng-click="model.nextSprint()">next</a>
+            <a href="#" class="alert-link" ng-click="model.goNextSprint()" ng-if="!!model.nextSprint"><strong>>> </strong>{{model.nextSprint.title}}</a>
         </div>
     </div>
 </div>
