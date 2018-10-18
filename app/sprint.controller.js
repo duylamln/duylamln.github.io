@@ -1,6 +1,6 @@
 ﻿(function (module) {
 
-    module.controller("MainController", myController);
+    module.controller("SprintController", myController);
     myController.$inject = ["appValues", "$scope"];
     function myController(appValues, $scope) {
         var model = this;

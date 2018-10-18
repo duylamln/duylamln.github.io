@@ -8,7 +8,7 @@
                 activities: "="
             },
             link: link,
-            templateUrl: "app/timeline.directive.html"
+            templateUrl: "app/directives/timeline.directive.html"
         };
         return directive;
 
