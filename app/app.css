@@ -71,3 +71,17 @@
 .pd-r-15 {
     padding-right: 15px !important;
 }
+
+.timesheet .card{
+    cursor: pointer;
+
+}
+
+.timesheet .card:hover{
+    background-color: aliceblue;
+
+}
+.timesheet .card.active{
+    background-color: azure;
+
+}

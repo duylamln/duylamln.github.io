@@ -1,7 +1,9 @@
 "use strict";
 var myApp = angular.module("myApp", [
     "ui.router",
-    "ui.mask"
+    "ui.mask",
+    "ngStorage",
+    "Alertify"
 ]);
 
 myApp.config(["$stateProvider", "$urlRouterProvider", function ($stateProvider, $urlRouterProvider) {
@@ -26,6 +28,10 @@ myApp.config(["$stateProvider", "$urlRouterProvider", function ($stateProvider, 
         controller: "TimesheetController",
         controllerAs: "model"
     });
+}]);
+
+myApp.run(["$rootScope", "Alertify", function($rootScope, Alertify){
+    $rootScope.alertify = Alertify;
 }]);
 
 

@@ -9,6 +9,9 @@
         model.setEndTime = setEndTime;
         model.onStartTimeChange = onStartTimeChange;
         model.onEndTimeChange = onEndTimeChange;
+        model.addNewTimeEntry = addNewTimeEntry;
+        model.deleteTimeEntry = deleteTimeEntry;
+        model.saveTimesheet = saveTimesheet;
 
 
         activate();
@@ -18,19 +21,32 @@
         }
 
         function getWeeklyTimesheet(date) {
-            var startWeek = date.startOf("week").add(1, "days"); //Monday
-            var endWeek = date.endOf("week").subtract(1, "days"); //Friday
+            var weekNumber = date.week();
+            var startWeek = moment(date).startOf("week").add(1, "days"); //Monday
+            var endWeek = moment(date).endOf("week").subtract(1, "days"); //Friday
 
-            model.timesheets = timesheetService.getByDateRange(startWeek, endWeek);
+            model.week = timesheetService.getByWeekNumber(weekNumber);
+            if (!model.week) model.week = emptyWeek(startWeek, endWeek, weekNumber);
+            _.each(model.week.timesheets, function (timesheet) {
+                timesheet.date = moment(timesheet.date);
 
-            _.each(model.timesheets, function (timesheet) {
+                if (equalDate(date, timesheet.date)) {
+                    model.selectedTimesheet = timesheet;
+                }
+
                 _.each(timesheet.timeEntries, function (timeEntry) {
+                    timeEntry.startTime = moment(timeEntry.startTime);
+                    timeEntry.endTime = moment(timeEntry.endTime);
                     timeEntry.startTimeDisplay = timeEntry.startTime.format("HHmm");
                     timeEntry.endTimeDisplay = timeEntry.endTime.format("HHmm");
                 });
             });
         }
 
+        function equalDate(date1, date2) {
+            return date1.format("yyyyMMdd") == date2.format("yyyyMMdd");
+
+        }
 
         function onTimesheetClick(timesheet) {
             model.selectedTimesheet = timesheet;
@@ -60,8 +76,8 @@
             return Math.round(value * multiplier) / multiplier;
         }
 
-        function onStartTimeChange(timeEntry){
-            if(!timeEntry.startTimeDisplay) return;
+        function onStartTimeChange(timeEntry) {
+            if (!timeEntry.startTimeDisplay) return;
             var hour = timeEntry.startTimeDisplay.substring(0, 2);
             var minute = timeEntry.startTimeDisplay.substring(2, 4);
             timeEntry.startTime.hour(hour);
@@ -69,8 +85,9 @@
             timeEntry.duration = calculateDuration(timeEntry);
         }
 
-        function onEndTimeChange(timeEntry){
-            if(!timeEntry.endTimeDisplay) return;
+        function onEndTimeChange(timeEntry) {
+            if (!timeEntry.endTimeDisplay) return;
+            if (!timeEntry.endTime) timeEntry.endTime = moment(timeEntry.startTime);
             var hour = timeEntry.endTimeDisplay.substring(0, 2);
             var minute = timeEntry.endTimeDisplay.substring(2, 4);
             timeEntry.endTime.hour(hour);
@@ -78,115 +95,55 @@
             timeEntry.duration = calculateDuration(timeEntry);
         }
 
-    }
-})(angular.module("myApp"));
+        function generateId() {
+            return Math.round(Math.random() * 1000000);
+        }
 
+        function saveTimesheet() {
+            calculateTimesheet();
+            timesheetService.saveTimesheet(model.week);
+        }
 
-(function (module) {
-    module.service("timesheetService", timeSheetService);
+        function calculateTimesheet() {
+            _.each(model.week.timesheets, function (timesheet) {
+                timesheet.totalHours = _.sumBy(timesheet.timeEntries, "duration");
+            });
 
-    timeSheetService.$inject = [];
+        }
+        function emptyWeek(startWeek, endWeek, weekNumber) {
+            var week = {
+                number: weekNumber,
+                startDate: startWeek,
+                endDate: endWeek,
+                title: "Week " + weekNumber + ": " + startWeek.format("DD/MM") + " - " + endWeek.format("DD/MM"),
+                timesheets: []
+            };
 
-    function timeSheetService() {
-        this.getByDateRange = getByDateRange;
-        function getByDateRange(startDate, endDate) {
-            return [
-                {
-                    date: moment(),
-                    timeEntries: [
-                        {
-                            startTime: moment(),
-                            endTime: moment().add(1, "hours"),
-                            description: "description",
-                            duration: 1
-                        },
-                        {
-                            startTime: moment(),
-                            endTime: moment().add(30, "minutes"),
-                            description: "description",
-                            duration: 0.5
-                        },
-                        {
-                            startTime: startDate,
-                            endTime: startDate,
-                            description: "description",
-                            hours: 1.2
-                        },
-                        {
-                            startTime: startDate,
-                            endTime: startDate,
-                            description: "description",
-                            hours: 1.2
-                        },
-                        {
-                            startTime: startDate,
-                            endTime: startDate,
-                            description: "description",
-                            hours: 1.2
-                        }
+            for (var i = 0; i < 5; i++) {
+                var date = moment(startWeek).add(i, "d");
+                week.timesheets.push({
+                    id: generateId(),
+                    date: date,
+                    totalHours: 0,
+                    timeEntries: []
+                })
+            }
+            return week;
+        }
 
-                    ],
-                    title: startDate.format("ddd - DD/MM"),
-                    totalHours: 8.9
-                },
-                {
-                    date: startDate,
-                    timeEntries: [
-                        {
-                            startTime: startDate,
-                            endTime: startDate,
-                            description: "description",
-                            hours: 1.2
-                        }
-                    ],
-                    title: startDate.format("ddd - DD/MM"),
-                    totalHours: 8.9
-                }, {
-                    date: startDate,
-                    timeEntries: [
-                        {
-                            startTime: startDate,
-                            endTime: startDate,
-                            description: "description",
-                            hours: 1.2
-                        }
-                    ],
-                    title: startDate.format("ddd - DD/MM"),
-                    totalHours: 8.9
-                }
-                , {
-                    date: startDate,
-                    timeEntries: [
-                        {
-                            startTime: startDate,
-                            endTime: startDate,
-                            description: "description",
-                            hours: 1.2
-                        }
-                    ],
-                    title: startDate.format("ddd - DD/MM"),
-                    totalHours: 8.9
-                },
-                {
-                    date: startDate,
-                    timeEntries: [
-                        {
-                            startTime: startDate,
-                            endTime: startDate,
-                            description: "description",
-                            hours: 1.2
-                        }
-                    ],
-                    title: startDate.format("ddd - DD/MM"),
-                    totalHours: 8.9
-                }
-
-            ];
+        function addNewTimeEntry() {
+            model.selectedTimesheet.timeEntries.push({
+                id: generateId(),
+                startTime: moment(),
+                startTimeDisplay: moment().format("HHmm"),
+                duration: 0,
+                description: ""
+            })
 
         }
 
-        return this;
+        function deleteTimeEntry(index) {
+            model.selectedTimesheet.timeEntries.splice(index, 1);
+        }
     }
-
-
 })(angular.module("myApp"));
