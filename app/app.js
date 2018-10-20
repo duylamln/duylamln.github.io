@@ -3,10 +3,13 @@ var myApp = angular.module("myApp", [
     "ui.router",
     "ui.mask",
     "ngStorage",
-    "Alertify"
+    "Alertify",
+    "ngMaterial",
+    "ngMessages"
 ]);
 
-myApp.config(["$stateProvider", "$urlRouterProvider", function ($stateProvider, $urlRouterProvider) {
+myApp.config(["$stateProvider", "$urlRouterProvider", "$mdAriaProvider", function ($stateProvider, $urlRouterProvider, $mdAriaProvider) {
+    $mdAriaProvider.disableWarnings();
     $urlRouterProvider.otherwise("/sprint");
     $stateProvider.state({
         name: "main",
@@ -30,7 +33,7 @@ myApp.config(["$stateProvider", "$urlRouterProvider", function ($stateProvider, 
     });
 }]);
 
-myApp.run(["$rootScope", "Alertify", function($rootScope, Alertify){
+myApp.run(["$rootScope", "Alertify", function ($rootScope, Alertify) {
     $rootScope.alertify = Alertify;
 }]);
 

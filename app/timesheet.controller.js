@@ -12,16 +12,28 @@
         model.addNewTimeEntry = addNewTimeEntry;
         model.deleteTimeEntry = deleteTimeEntry;
         model.saveTimesheet = saveTimesheet;
-
+        model.prevWeek = prevWeek;
+        model.nextWeek = nextWeek;
 
         activate();
 
         function activate() {
-            getWeeklyTimesheet(moment());
+            model.currentWeek = moment().week();
+            model.weekNumber = moment().week();
+            getWeeklyTimesheet(model.weekNumber);
+        }
+        function prevWeek() {
+            model.weekNumber--;
+            getWeeklyTimesheet(model.weekNumber);
         }
 
-        function getWeeklyTimesheet(date) {
-            var weekNumber = date.week();
+        function nextWeek() {
+            model.weekNumber++;
+            getWeeklyTimesheet(model.weekNumber);
+        }
+
+        function getWeeklyTimesheet(weekNumber) {
+            var date = dateFromWeek(weekNumber);
             var startWeek = moment(date).startOf("week").add(1, "days"); //Monday
             var endWeek = moment(date).endOf("week").subtract(1, "days"); //Friday
 
@@ -43,6 +55,10 @@
             });
         }
 
+        function dateFromWeek(weekNumber) {
+            return moment().month(0).date(0).add(weekNumber - 1, "w");
+        }
+
         function equalDate(date1, date2) {
             return date1.format("yyyyMMdd") == date2.format("yyyyMMdd");
 
@@ -54,13 +70,15 @@
         }
 
         function setStartTime(timeEntry) {
-            timeEntry.startTime = moment();
+            timeEntry.startTime = moment(model.selectedTimesheet.date);
+            timeEntry.startTime.hour(moment().hour()).minute(moment().minute());
             timeEntry.startTimeDisplay = timeEntry.startTime.format("HHmm");
             timeEntry.duration = calculateDuration(timeEntry);
         }
 
         function setEndTime(timeEntry) {
-            timeEntry.endTime = moment();
+            timeEntry.endTime = moment(model.selectedTimesheet.date);
+            timeEntry.endTime.hour(moment().hour()).minute(moment().minute());
             timeEntry.endTimeDisplay = timeEntry.endTime.format("HHmm");
             timeEntry.duration = calculateDuration(timeEntry);
         }
@@ -68,7 +86,6 @@
         function calculateDuration(timeEntry) {
             if (!timeEntry.startTime || !timeEntry.endTime) return 0;
             return round((timeEntry.endTime.diff(timeEntry.startTime)) / (60 * 60 * 1000), 1);
-
         }
 
         function round(value, precision) {
@@ -115,7 +132,7 @@
                 number: weekNumber,
                 startDate: startWeek,
                 endDate: endWeek,
-                title: "Week " + weekNumber + ": " + startWeek.format("DD/MM") + " - " + endWeek.format("DD/MM"),
+                title: "Week " + weekNumber + ": " + startWeek.format("DD.MM") + " - " + endWeek.format("DD.MM"),
                 timesheets: []
             };
 
@@ -132,10 +149,11 @@
         }
 
         function addNewTimeEntry() {
+            var date = moment(model.selectedTimesheet.date).hour(moment().hour()).minute(moment().minute());
             model.selectedTimesheet.timeEntries.push({
                 id: generateId(),
-                startTime: moment(),
-                startTimeDisplay: moment().format("HHmm"),
+                startTime: date,
+                startTimeDisplay: date.format("HHmm"),
                 duration: 0,
                 description: ""
             })

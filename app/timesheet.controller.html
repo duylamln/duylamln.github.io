@@ -1,76 +1,67 @@
-﻿<div style="margin-top: 50px">
-    <div class="row mb-3">
-        <div class="col offset-lg-1"><h2>{{model.week.title}}</h2></div>
-    </div>
-    <div class="row timesheet">
-        <div class="col-lg-2" ng-class="{'offset-lg-1': $index === 0, active: model.selectedTimesheet.id == timesheet.id}" ng-repeat="timesheet in model.week.timesheets"
-            ng-click="model.onTimesheetClick(timesheet)">
-
+﻿<div style="padding: 100px" class=timesheet ng-cloak>
+    <h2 class="md-display-1">{{model.week.title}}
+            <span class="badge badge-secondary" ng-if="model.currentWeek == model.weekNumber">Current</span>
+    </h2>
+    <md-grid-list md-cols="12" md-row-height="100px">
+        <md-grid-tile>
+            <md-button class="md-primary" type="submit" ng-click="model.prevWeek()">
+                Prev
+            </md-button>
+        </md-grid-tile>
+        <md-grid-tile md-colspan="2" ng-repeat="timesheet in model.week.timesheets" ng-click="model.onTimesheetClick(timesheet)">
             <div class="card flex-fill" ng-class="{active: model.selectedTimesheet.id === timesheet.id}">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-12 col-md-6 align-self-center text-center text-md-left">
                             <h4>{{timesheet.totalHours}}</h4>
-                            <p class="mb-0">{{timesheet.date.format('ddd DD/MM')}}</p>
+                            <p class="mb-0">{{timesheet.date.format('ddd DD.MM')}}</p>
                         </div>
                     </div>
                 </div>
             </div>
+        </md-grid-tile>
+        <md-grid-tile>
+            <md-button class="md-primary" type="submit" ng-click="model.nextWeek()">
+                Next
+            </md-button>
+        </md-grid-tile>
+    </md-grid-list>
+    <div style="margin-top: 20px">
+        <div layout="columns" style="margin-top: 0px" ng-repeat="timeEntry in model.selectedTimesheet.timeEntries">
+            <md-input-container flex="10">
+                <md-icon class="name" ng-click="model.setStartTime(timeEntry)">
+                    <i class="fas fa-clock fa-lg"></i>
+                </md-icon>
+                <input type="text" ui-mask="99:99" ng-model="timeEntry.startTimeDisplay" ng-change="model.onStartTimeChange(timeEntry)">
+
+            </md-input-container>
+            <md-input-container flex="10">
+                <md-icon class="name" ng-click="model.setEndTime(timeEntry)">
+                    <i class="fas fa-clock fa-lg"></i>
+                </md-icon>
+                <input type="text" ui-mask="99:99" ng-model="timeEntry.endTimeDisplay" ng-change="model.onEndTimeChange(timeEntry)">
+                <pre>{{timeEntry.endTime.format("yyyyMMDD hhmm")}}</pre>
+            </md-input-container>
+            <md-input-container flex="10">
+                <input type="text" id="inlineFormInputName2" ng-model="timeEntry.duration">
+            </md-input-container>
+            <md-input-container flex="70">
+                <input type="text" id="inlineFormInputName2" ng-model="timeEntry.description">
+                <md-icon ng-click="model.deleteTimeEntry($index)">
+                    <i class="fas fa-trash-alt fa-lg"></i>
+                </md-icon>
+            </md-input-container>
         </div>
     </div>
+    <div ng-if="model.selectedTimesheet">
+        <md-button type="submit" ng-click="model.addNewTimeEntry()">
+            <i class="fas fa-plus fa-lg"></i>
+            Add new entry
+        </md-button>
 
-    <div class="row">
-        <div class="col-lg-10 offset-lg-1">
-            <form class="form-row mb-3" ng-repeat="timeEntry in model.selectedTimesheet.timeEntries">
-                <div class="col-1">
-                    <div class="input-group">
-                        <input type="text" class="form-control" ui-mask="99:99" ng-model="timeEntry.startTimeDisplay"
-                            ng-change="model.onStartTimeChange(timeEntry)">
-                        <div class="input-group-append">
-                            <button type="button" class="btn btn-primary" ng-click="model.setStartTime(timeEntry)">
-                                <i class="fas fa-clock fa-sm"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-1">
-                    <div class="input-group">
-                        <input type="text" class="form-control" ui-mask="99:99" ng-model="timeEntry.endTimeDisplay"
-                            ng-change="model.onEndTimeChange(timeEntry)">
-                        <div class="input-group-append">
-                            <button type="button" class="btn btn-primary" ng-click="model.setEndTime(timeEntry)">
-                                <i class="fas fa-clock fa-sm"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-1">
-                    <input type="text" class="form-control" id="inlineFormInputName2" ng-model="timeEntry.duration">
-                </div>
-                <div class="col-8">
-                    <input type="text" class="form-control " id="inlineFormInputName2" ng-model="timeEntry.description">
-                </div>
-                <div class="col-1 text-right">
-                    <button type="button" class="btn btn-link" ng-click="model.deleteTimeEntry($index)">
-                        <i class="fas fa-trash-alt fa-lg"></i>
-                    </button>
-                </div>
-            </form>
-            <div class="row" ng-if="model.selectedTimesheet">
-                <div class="col">
-                    <button type="button" class="btn btn-link" ng-click="model.addNewTimeEntry()">
-                        <i class="fas fa-plus fa-lg"></i>
-                        Add new entry
-                    </button>
-                </div>
-                <div class="col text-right">
-                    <button type="button" class="btn btn-success pull-right" ng-click="model.saveTimesheet()">
-                        <i class="fa fa-check fa-lg"></i>
-                        Save
-                    </button>
-
-                </div>
-            </div>
-        </div>
+        <md-button type="submit" ng-click="model.saveTimesheet()">
+            <i class="fa fa-check fa-lg"></i>
+            Save
+        </md-button>
     </div>
+</div>

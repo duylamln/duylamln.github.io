@@ -61,7 +61,6 @@
     background-clip: border-box;
     border: 1px solid #e5e9f2;
     border-radius: 0;
-    margin-bottom: 2rem;
 }
 
 .pd-l-0 {
@@ -85,3 +84,20 @@
     background-color: azure;
 
 }
+
+.timesheet md-icon {
+    cursor: pointer;
+}
+
+.timesheet md-input-container{
+    margin: 0;
+
+}
+
+.timesheet i.fa-clock{
+color: lightseagreen;
+}
+
+.timesheet i.fa-trash-alt{
+    color: red;
+    }
