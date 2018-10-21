@@ -37,22 +37,15 @@
             var startWeek = moment(date).startOf("week").add(1, "days"); //Monday
             var endWeek = moment(date).endOf("week").subtract(1, "days"); //Friday
 
-            model.week = timesheetService.getByWeekNumber(weekNumber);
-            if (!model.week) model.week = emptyWeek(startWeek, endWeek, weekNumber);
-            _.each(model.week.timesheets, function (timesheet) {
-                timesheet.date = moment(timesheet.date);
 
-                if (equalDate(date, timesheet.date)) {
-                    model.selectedTimesheet = timesheet;
-                }
-
-                _.each(timesheet.timeEntries, function (timeEntry) {
-                    timeEntry.startTime = moment(timeEntry.startTime);
-                    timeEntry.endTime = moment(timeEntry.endTime);
-                    timeEntry.startTimeDisplay = timeEntry.startTime.format("HHmm");
-                    timeEntry.endTimeDisplay = timeEntry.endTime.format("HHmm");
+            timesheetService.getByWeekNumber(weekNumber)
+                .then(function (data) {
+                    model.week = data;
+                    if (!model.week) model.week = emptyWeek(startWeek, endWeek, weekNumber);
+                    model.selectedTimesheet = _.find(model.week.timesheets, function(timesheet){
+                        return equalDate(date, timesheet.date);
+                    });
                 });
-            });
         }
 
         function dateFromWeek(weekNumber) {
@@ -66,7 +59,6 @@
 
         function onTimesheetClick(timesheet) {
             model.selectedTimesheet = timesheet;
-
         }
 
         function setStartTime(timeEntry) {
@@ -150,6 +142,7 @@
 
         function addNewTimeEntry() {
             var date = moment(model.selectedTimesheet.date).hour(moment().hour()).minute(moment().minute());
+            if (!model.selectedTimesheet.timeEntries) model.selectedTimesheet.timeEntries = [];
             model.selectedTimesheet.timeEntries.push({
                 id: generateId(),
                 startTime: date,

@@ -26,28 +26,61 @@
     */
 
     module.service("timesheetService", timeSheetService);
-    
-    timeSheetService.$inject = ["$localStorage", "Alertify"]; 
+
+    timeSheetService.$inject = ["$localStorage", "$q", "Alertify", "convertService"];
 
 
-    function timeSheetService($localStorage, Alertify) {
+    function timeSheetService($localStorage, $q, Alertify, convertService) {
+        var database = firebase.database();
         this.getByWeekNumber = getByWeekNumber;
         this.saveTimesheet = saveTimesheet;
-        
+
 
         function getByWeekNumber(weekNumber) {
-            if(!$localStorage.weeks) return null;
-            return _.find($localStorage.weeks, {number: weekNumber});
+            var defer = $q.defer();
+            var weekFilter = database.ref("weeks").orderByChild("number").equalTo(weekNumber).limitToFirst(1);
+            weekFilter.once("value",
+                function (snapshot) {
+                    if (!snapshot.exists()) {
+                        defer.resolve(null);
+                    }
+                    else {
+                        snapshot.forEach(function(childSnapshot){                            
+                            var key= childSnapshot.key;
+                            var weekData = childSnapshot.val();
+                            weekData.key = key;
+                            convertService.convertStringToMoment(weekData);
+                            defer.resolve(weekData);
+                        })
+                    }
+                },
+                function (error) {
+                    Alertify.error(error);
+                    defer.reject(error);
+                });
+
+            return defer.promise;
         }
 
-        function saveTimesheet(week){
-            if(!$localStorage.weeks) $localStorage.weeks = [];
-            if($localStorage.weeks.length == 10) $localStorage.weeks.shift();
-            var weekIndex = _.findIndex($localStorage.weeks, {number: week.number});
-            if(weekIndex > -1) $localStorage.weeks.splice(weekIndex, 1, week);
-            else $localStorage.weeks.push(week);
+        function saveTimesheet(week) {
+            var defer = $q.defer();
 
-            Alertify.success("Timesheet saved!");
+            var datapost = angular.copy(week);
+            convertService.convertMomentToString(datapost);
+
+            if (!datapost.key) datapost.key = database.ref().child("weeks").push().key;
+            database.ref("weeks/" + datapost.key)
+                .set(datapost, function (error) {
+                    if (error) {
+                        Alertify.error(error);
+                        defer.reject(error);
+                    }
+                    else {
+                        Alertify.success("Timesheet saved!");
+                        defer.resolve();
+                    }
+                });
+            return defer.promise;
         }
         return this;
     }
