@@ -14,16 +14,19 @@
     <link href="contents/angular-material.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
         crossorigin="anonymous">
+    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.css" />
 </head>
 
 <body>
-    <div ng-app="myApp" class="container-fluid">
+    <div ng-app="myApp" class="container-fluid">        
         <ui-view></ui-view>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase-auth.js"></script>
+    <script src="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.js"></script>
 
     <script>
         // Initialize Firebase
@@ -61,6 +64,7 @@
     <script src="app/services/convertService.js"></script>
     <script src="app/sprint.controller.js"></script>
     <script src="app/timesheet.controller.js"></script>
+    <script src="app/login.controller.js"></script>
     <script src="app/directives/timeline.directive.js"></script>
 
     <script src="app/app.value.js"></script>

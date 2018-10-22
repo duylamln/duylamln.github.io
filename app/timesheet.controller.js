@@ -1,7 +1,7 @@
 ﻿(function (module) {
     module.controller("TimesheetController", timesheetController);
     timesheetController.$inject = ["appValues", "$scope", "timesheetService"];
-    function timesheetController(appValues, $scope, timesheetService) {
+    function timesheetController(appValues, $scope, timesheetService) {   
         var model = this;
         model.selectedTimesheet;
         model.onTimesheetClick = onTimesheetClick;
@@ -42,8 +42,8 @@
                 .then(function (data) {
                     model.week = data;
                     if (!model.week) model.week = emptyWeek(startWeek, endWeek, weekNumber);
-                    model.selectedTimesheet = _.find(model.week.timesheets, function(timesheet){
-                        return equalDate(date, timesheet.date);
+                    model.selectedTimesheet = _.find(model.week.timesheets, function (timesheet) {
+                        return equalDate(moment(), timesheet.date);
                     });
                 });
         }
