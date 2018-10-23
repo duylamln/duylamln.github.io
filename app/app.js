@@ -5,8 +5,20 @@ var myApp = angular.module("myApp", [
     "ngStorage",
     "Alertify",
     "ngMaterial",
-    "ngMessages"
+    "ngMessages",
+    "cfp.hotkeys"
 ]);
+
+angular.element(function () {
+    firebase.auth().onAuthStateChanged(function (user) {
+        window.user = user;
+        if (!window.bootstrapped) {
+            angular.bootstrap(document, ["myApp"]);
+            window.bootstrapped = true;
+        }
+    });
+});
+
 
 myApp.config(["$stateProvider", "$urlRouterProvider", "$mdAriaProvider", function ($stateProvider, $urlRouterProvider, $mdAriaProvider) {
     $mdAriaProvider.disableWarnings();
@@ -30,16 +42,7 @@ myApp.config(["$stateProvider", "$urlRouterProvider", "$mdAriaProvider", functio
         templateUrl: "app/timesheet.controller.html",
         controller: "TimesheetController",
         controllerAs: "model",
-        onEnter: function ($state) {
-            firebase.auth().onAuthStateChanged(function (user) {
-                if (user) {
-                    console.log(user);
-                }
-                else {
-                    $state.go("main.login", { returnState: "main.timesheet" });
-                }
-            });
-        }
+        requiredAuth: true
     });
     $stateProvider.state({
         name: "main.login",
@@ -50,8 +53,15 @@ myApp.config(["$stateProvider", "$urlRouterProvider", "$mdAriaProvider", functio
     });
 }]);
 
-myApp.run(["$rootScope", "Alertify", "$state", function ($rootScope, Alertify, $state) {
+myApp.run(["$rootScope", "Alertify", "$state", "$transitions", function ($rootScope, Alertify, $state, $transitions) {
     $rootScope.alertify = Alertify;
+
+    // firebase.auth().onAuthStateChanged(function (user) {
+    //     $rootScope.user = user;
+
+
+
+    // });
 
     var ui = new firebaseui.auth.AuthUI(firebase.auth());
     var uiConfig = {
@@ -60,6 +70,7 @@ myApp.run(["$rootScope", "Alertify", "$state", function ($rootScope, Alertify, $
                 // User successfully signed in.
                 // Return type determines whether we continue the redirect automatically
                 // or whether we leave that to developer to handle.
+                window.user = authResult;
                 return true;
             },
             uiShown: function () {
@@ -87,13 +98,32 @@ myApp.run(["$rootScope", "Alertify", "$state", function ($rootScope, Alertify, $
     };
 
     $rootScope.showLoginForm = function (returnState) {
-        uiConfig.callbacks.signInSuccessWithAuthResult = function(){
+        uiConfig.callbacks.signInSuccessWithAuthResult = function (authResult, redirectUrl) {
+            window.user = authResult.user;
             $state.go(returnState);
         }
 
         // The start method will wait until the DOM is loaded.
         ui.start('#firebaseui-auth-container', uiConfig);
     }
+
+
+    $transitions.onBefore({to: "main.*"}, function (trans) {
+        var stateService = trans.router.stateService;
+        var targetState = trans._targetState;
+        var targetStateConfig = stateService.get(targetState.identifier());
+        if(!window.user && targetStateConfig.requiredAuth === true){
+            stateService.go("main.login", { returnState: targetState._identifier });
+            return false;
+        }
+        return true;        
+    });
+
+    // $transitions.onError({}, function (trans) {
+    //     var stateService = trans.router.stateService;
+    //     var targetState = trans._targetState;
+    //     stateService.go("main.login", { returnState: targetState._identifier });
+    // });
 }]);
 
 

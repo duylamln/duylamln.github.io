@@ -1,7 +1,7 @@
 ﻿(function (module) {
     module.controller("TimesheetController", timesheetController);
-    timesheetController.$inject = ["appValues", "$scope", "timesheetService"];
-    function timesheetController(appValues, $scope, timesheetService) {   
+    timesheetController.$inject = ["timesheetService", "hotkeys"];
+    function timesheetController(timesheetService, hotkeys) {
         var model = this;
         model.selectedTimesheet;
         model.onTimesheetClick = onTimesheetClick;
@@ -21,7 +21,30 @@
             model.currentWeek = moment().week();
             model.weekNumber = moment().week();
             getWeeklyTimesheet(model.weekNumber);
+            registerHotkeys();
         }
+
+        function registerHotkeys() {
+            hotkeys.add({
+                combo: 'ctrl+s',
+                description: 'Save timesheet',
+                callback: function (e) {
+                    saveTimesheet();
+                    e.preventDefault();
+                },
+                allowIn : ['INPUT', 'SELECT']
+            });
+            hotkeys.add({
+                combo: 'ctrl+a',
+                description: 'Add new time entry',
+                callback: function (e) {
+                    addNewTimeEntry();
+                    e.preventDefault();
+                },
+                allowIn : ['INPUT', 'SELECT']
+            });
+        }
+
         function prevWeek() {
             model.weekNumber--;
             getWeeklyTimesheet(model.weekNumber);
