@@ -138,7 +138,7 @@
 
         function calculateTimesheet() {
             _.each(model.week.timesheets, function (timesheet) {
-                timesheet.totalHours = _.sumBy(timesheet.timeEntries, "duration");
+                timesheet.totalHours = round(_.sumBy(timesheet.timeEntries, "duration"), 1);
             });
 
         }
