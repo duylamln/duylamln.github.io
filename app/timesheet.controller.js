@@ -14,6 +14,7 @@
         model.saveTimesheet = saveTimesheet;
         model.prevWeek = prevWeek;
         model.nextWeek = nextWeek;
+        model.showAllWeekTimeEntries = showAllWeekTimeEntries;
 
         activate();
 
@@ -32,7 +33,7 @@
                     saveTimesheet();
                     e.preventDefault();
                 },
-                allowIn : ['INPUT', 'SELECT']
+                allowIn: ['INPUT', 'SELECT']
             });
             hotkeys.add({
                 combo: 'ctrl+a',
@@ -41,7 +42,7 @@
                     addNewTimeEntry();
                     e.preventDefault();
                 },
-                allowIn : ['INPUT', 'SELECT']
+                allowIn: ['INPUT', 'SELECT']
             });
         }
 
@@ -65,10 +66,18 @@
                 .then(function (data) {
                     model.week = data;
                     if (!model.week) model.week = emptyWeek(startWeek, endWeek, weekNumber);
+
+                    model.totalHours = calculateWeekTotalHours(model.week);
                     model.selectedTimesheet = _.find(model.week.timesheets, function (timesheet) {
                         return equalDate(moment(), timesheet.date);
                     });
                 });
+        }
+
+        function calculateWeekTotalHours(week) {
+            return round(_.sumBy(week.timesheets, function (item) {
+                return item.totalHours;
+            }), 1);
         }
 
         function dateFromWeek(weekNumber) {
@@ -142,6 +151,7 @@
             });
 
         }
+
         function emptyWeek(startWeek, endWeek, weekNumber) {
             var week = {
                 number: weekNumber,
@@ -178,6 +188,10 @@
 
         function deleteTimeEntry(index) {
             model.selectedTimesheet.timeEntries.splice(index, 1);
+        }
+
+        function showAllWeekTimeEntries() {
+
         }
     }
 })(angular.module("myApp"));

@@ -1,6 +1,7 @@
-﻿<div style="padding: 100px" class=timesheet ng-cloak>
+﻿<div style="padding: 100px" class="timesheet" ng-cloak>
     <h2 class="md-display-1 mb-4">{{model.week.title}}
-            <span class="badge badge-secondary" ng-if="model.currentWeek == model.weekNumber">Current</span>
+            <span class="badge badge-info" ng-click="showAllWeekTimeEntries()">{{model.week.key}}</span>
+            <span class="badge badge-primary" ng-click="showAllWeekTimeEntries()">{{model.totalHours}}h</span>
     </h2>
     <md-grid-list md-cols="12" md-row-height="100px" class="mb-4">
         <md-grid-tile>
