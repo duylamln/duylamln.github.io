@@ -142,7 +142,10 @@
 
         function saveTimesheet() {
             calculateTimesheet();
-            timesheetService.saveTimesheet(model.week);
+            timesheetService.saveTimesheet(model.week)
+                .then(function(){
+                    model.totalHours = calculateWeekTotalHours(model.week);
+                });
         }
 
         function calculateTimesheet() {
