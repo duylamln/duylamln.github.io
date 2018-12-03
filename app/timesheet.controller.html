@@ -1,7 +1,7 @@
 ﻿<div style="padding: 100px" class="timesheet" ng-cloak>
     <h2 class="md-display-1 mb-4">{{model.week.title}}
-            <span class="badge badge-info" ng-click="showAllWeekTimeEntries()">{{model.week.key}}</span>
-            <span class="badge badge-primary" ng-click="showAllWeekTimeEntries()">{{model.totalHours}}h</span>
+        <span class="badge badge-info" ng-click="model.showAllWeekTimeEntries()">{{model.week.key}}</span>
+        <span class="badge badge-primary" ng-click="model.showAllWeekTimeEntries()">{{model.totalHours}}h</span>
     </h2>
     <md-grid-list md-cols="12" md-row-height="100px" class="mb-4">
         <md-grid-tile>
@@ -56,6 +56,31 @@
                     <i class="fas fa-trash-alt fa-lg"></i>
                 </md-icon>
             </md-input-container>
+        </div>
+    </div>
+    <div class="row table-responsive" ng-if="model.showWeekTimesheet">
+        <div class="col-12">
+            <table class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Start time</th>
+                        <th>End time</th>
+                        <th>Duration</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="timeEntry in model.weekTimeEntries"
+                        ng-class="{'table-odd-row': timeEntry.startTime.date() % 2}">
+                        <td>{{timeEntry.startTime | momentDate: 'DD.MM.YYYY'}}</td>
+                        <td>{{timeEntry.startTime | momentDate: 'hh:mm'}}</td>
+                        <td>{{timeEntry.endTime | momentDate: 'hh:mm'}}</td>
+                        <td>{{timeEntry.duration}}</td>
+                        <td>{{timeEntry.description}}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
     <div ng-if="model.selectedTimesheet">

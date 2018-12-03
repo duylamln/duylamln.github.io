@@ -20,6 +20,7 @@ angular.element(function () {
 });
 
 
+
 myApp.config(["$stateProvider", "$urlRouterProvider", "$mdAriaProvider", function ($stateProvider, $urlRouterProvider, $mdAriaProvider) {
     $mdAriaProvider.disableWarnings();
     $urlRouterProvider.otherwise("/sprint");
@@ -126,6 +127,11 @@ myApp.run(["$rootScope", "Alertify", "$state", "$transitions", function ($rootSc
     // });
 }]);
 
+myApp.filter("momentDate", function(){
+    return function(input, format){
+        return input.format(format);
+    }
+});
 
 
 

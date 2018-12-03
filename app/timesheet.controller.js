@@ -90,6 +90,7 @@
         }
 
         function onTimesheetClick(timesheet) {
+            model.showWeekTimesheet = false;
             model.selectedTimesheet = timesheet;
         }
 
@@ -194,7 +195,11 @@
         }
 
         function showAllWeekTimeEntries() {
-
+            model.selectedTimesheet = null;
+            model.showWeekTimesheet = true;
+            model.weekTimeEntries = _.reduce(model.week.timesheets, function(all, timesheet){
+                return all.concat(timesheet.timeEntries || []);
+            }, []);
         }
     }
 })(angular.module("myApp"));

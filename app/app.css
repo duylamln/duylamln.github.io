@@ -101,3 +101,7 @@ color: lightseagreen;
 .timesheet i.fa-trash-alt{
     color: red;
     }
+
+table tr.table-odd-row {
+    background-color: aliceblue;
+}
