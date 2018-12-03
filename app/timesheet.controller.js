@@ -49,11 +49,13 @@
         function prevWeek() {
             model.weekNumber--;
             getWeeklyTimesheet(model.weekNumber);
+            
         }
 
         function nextWeek() {
             model.weekNumber++;
             getWeeklyTimesheet(model.weekNumber);
+            
         }
 
         function getWeeklyTimesheet(weekNumber) {
@@ -71,6 +73,8 @@
                     model.selectedTimesheet = _.find(model.week.timesheets, function (timesheet) {
                         return equalDate(moment(), timesheet.date);
                     });
+
+                    if(model.showWeekTimesheet || !model.selectedTimesheet) showAllWeekTimeEntries();
                 });
         }
 

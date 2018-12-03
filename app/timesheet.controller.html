@@ -72,7 +72,7 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="timeEntry in model.weekTimeEntries"
-                        ng-class="{'table-odd-row': timeEntry.startTime.date() % 2}">
+                        ng-class="{'table-odd-row': timeEntry.startTime.day() % 2}">
                         <td>{{timeEntry.startTime | momentDate: 'DD.MM.YYYY'}}</td>
                         <td>{{timeEntry.startTime | momentDate: 'hh:mm'}}</td>
                         <td>{{timeEntry.endTime | momentDate: 'hh:mm'}}</td>
