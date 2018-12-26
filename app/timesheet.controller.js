@@ -1,7 +1,7 @@
 ﻿(function (module) {
     module.controller("TimesheetController", timesheetController);
-    timesheetController.$inject = ["timesheetService", "hotkeys"];
-    function timesheetController(timesheetService, hotkeys) {
+    timesheetController.$inject = ["timesheetService", "hotkeys", "openProjectService"];
+    function timesheetController(timesheetService, hotkeys, openProjectService) {
         var model = this;
         model.selectedTimesheet;
         model.onTimesheetClick = onTimesheetClick;
@@ -15,6 +15,8 @@
         model.prevWeek = prevWeek;
         model.nextWeek = nextWeek;
         model.showAllWeekTimeEntries = showAllWeekTimeEntries;
+        model.myWorkPackages;
+        model.timeEntryActivities = [];
 
         activate();
 
@@ -22,7 +24,24 @@
             model.currentWeek = moment().week();
             model.weekNumber = moment().week();
             getWeeklyTimesheet(model.weekNumber);
+            //getMyWorkPackages();
+            //getTimeEntryActivities();
             registerHotkeys();
+        }
+
+        function getMyWorkPackages(){
+            openProjectService.getMyWorkPackages()
+                .then(function(workPackageCollection){
+                    model.myWorkPackages = workPackageCollection.elements;
+                });
+
+        }
+
+        function getTimeEntryActivities(){
+            openProjectService.getTimeEntryActivities()
+                .then(function(timeEntryActivities){
+                    model.timeEntryActivities = timeEntryActivities;
+                });
         }
 
         function registerHotkeys() {

@@ -46,6 +46,13 @@ myApp.config(["$stateProvider", "$urlRouterProvider", "$mdAriaProvider", functio
         requiredAuth: true
     });
     $stateProvider.state({
+        name: "main.order",
+        url: "/order",
+        templateUrl: "app/order.controller.html",
+        controller: "OrderController",
+        controllerAs: "model"
+    });
+    $stateProvider.state({
         name: "main.login",
         url: "/login?returnState=",
         templateUrl: "app/login.controller.html",

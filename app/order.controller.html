@@ -1,0 +1,108 @@
+﻿<div class="order" ng-cloak>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm">
+                <div class="row">
+                    <div class="col">
+                        <form>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="https://foody.com" aria-label="https://foody.com"
+                                    aria-describedby="basic-addon2" ng-model="model.websiteUrl">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" ng-click="model.goToWebsite()">Go!</span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col" ng-if="model.trustedWebsiteUrl">
+                        <iframe class="order-website" ng-src="{{model.trustedWebsiteUrl}}"></iframe>
+                    </div>
+                    <div class="col" ng-if="!model.trustedWebsiteUrl">
+                        Nothing to show
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-sm">
+                <button class="btn btn-link" ng-click="model.createNewOrder()">
+                    <i class="fas fa-plus fa-lg"></i>
+                    <span class="h4">Create new order</h4>
+                </button>
+
+                <div class="row">
+                    <div class="col-8">
+                        <ul class="list-group">
+                            <a href="" class="list-group-item list-group-item-action" ng-repeat="order in model.activeOrders"
+                                ng-click="model.selectOrder(order)">
+                                {{order.date.format('dddd DD.MM.YYYY hh:ss')}}
+                                <small>{{order.key}}</small>
+                                <span class="fa-pull-right"><i class="fas fa-trash-alt pull-right" ng-click="model.removeOrder(order, $event)"></i></span>
+                                
+                            </a>
+
+                        </ul>
+
+                    </div>
+                </div>
+                <div class="row" ng-if="model.selectedOrder" style="margin-top: 20px">
+                    <div class="col">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Order</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="orderDetail in model.selectedOrder.detail">
+                                    <td>{{$index + 1}}</td>
+                                    <td>{{orderDetail.name}}</td>
+                                    <td>{{orderDetail.desc}}</td>
+                                    <td>{{orderDetail.price | currency: "$":0}}</td>
+                                    <td>
+                                            <i class="fas fa-edit" ng-click="model.editOrderDetail($index, orderDetail)"></i>
+                                        <i class="fas fa-trash-alt" ng-click="model.removeOrderDetail($index)"></i>
+                                    </td>
+                                </tr>
+                                <tr ng-if="model.selectedOrder.detail && model.selectedOrder.detail.length > 0">
+                                    <td colspan="3" class="text-center">Total</td>
+                                    <td>{{model.calculateOrderPrice() | currency: "$":0 }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" ng-if="model.selectedOrder" style="margin-top: 40px">
+                    <div class="col-6">
+                        <fieldset class="fieldset-border">
+                            <legend>Order Detail:</legend>
+                            <form>
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    <input type="text" class="form-control" placeholder="your name" ng-model="model.orderDetail.name">
+                                </div>
+                                <div class="form-group">
+                                    <label>Order</label>
+                                    <input type="text" class="form-control" placeholder="would you like something ?"
+                                        ng-model="model.orderDetail.desc">
+                                </div>
+                                <div class="form-group">
+                                    <label>Price</label>
+                                    <input type="text" class="form-control" placeholder="e.g. 54.000" ng-model="model.orderDetail.price">
+                                </div>
+                                <button type="submit" class="btn btn-primary" ng-click="model.submitOrder()"
+                                    ng-disabled="!model.orderDetail.name || !model.orderDetail.desc">Submit</button>
+                            </form>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

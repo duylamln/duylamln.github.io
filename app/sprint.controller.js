@@ -1,8 +1,8 @@
 ﻿(function (module) {
 
     module.controller("SprintController", myController);
-    myController.$inject = ["appValues", "$scope"];
-    function myController(appValues, $scope) {
+    myController.$inject = ["appValues", "$scope", "$http"];
+    function myController(appValues, $scope, $http) {
         var model = this;
         model.goPrevSprint = goPrevSprint;
         model.goNextSprint = goNextSprint;

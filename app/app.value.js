@@ -15,7 +15,16 @@
             new Date(2018, 10, 14),
             new Date(2018, 10, 28),
             new Date(2018, 11, 12),
-            new Date(2018, 11, 26)
+            new Date(2018, 11, 26),
+            new Date(2019, 0, 09),
+            new Date(2019, 0, 23),
+            new Date(2019, 1, 07),
+            new Date(2019, 1, 21),
+            new Date(2019, 2, 07),
+            new Date(2019, 2, 21),
+            new Date(2019, 3, 04),
+            new Date(2019, 3, 18),
+            new Date(2019, 4, 02)
         ];
 
 
