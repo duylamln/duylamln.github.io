@@ -50,6 +50,14 @@ myApp.config(["$stateProvider", "$urlRouterProvider", "$mdAriaProvider", functio
         url: "/order",
         templateUrl: "app/order.controller.html",
         controller: "OrderController",
+        controllerAs: "model",
+        requiredAuth: true
+    });
+    $stateProvider.state({
+        name: "main.orderDetail",
+        url: "/order/:key",
+        templateUrl: "app/orderDetail.controller.html",
+        controller: "OrderDetailController",
         controllerAs: "model"
     });
     $stateProvider.state({
@@ -92,12 +100,12 @@ myApp.run(["$rootScope", "Alertify", "$state", "$transitions", function ($rootSc
         signInSuccessUrl: "/sprint",
         signInOptions: [
             // Leave the lines as is for the providers you want to offer your users.
-            firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-            firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-            firebase.auth.TwitterAuthProvider.PROVIDER_ID,
-            firebase.auth.GithubAuthProvider.PROVIDER_ID,
-            firebase.auth.EmailAuthProvider.PROVIDER_ID,
-            firebase.auth.PhoneAuthProvider.PROVIDER_ID
+            // firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+            // firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+            // firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+            // firebase.auth.GithubAuthProvider.PROVIDER_ID,
+            firebase.auth.EmailAuthProvider.PROVIDER_ID
+            // firebase.auth.PhoneAuthProvider.PROVIDER_ID
         ],
         // Terms of service url.
         tosUrl: '<your-tos-url>',
@@ -116,15 +124,15 @@ myApp.run(["$rootScope", "Alertify", "$state", "$transitions", function ($rootSc
     }
 
 
-    $transitions.onBefore({to: "main.*"}, function (trans) {
+    $transitions.onBefore({ to: "main.*" }, function (trans) {
         var stateService = trans.router.stateService;
         var targetState = trans._targetState;
         var targetStateConfig = stateService.get(targetState.identifier());
-        if(!window.user && targetStateConfig.requiredAuth === true){
+        if (!window.user && targetStateConfig.requiredAuth === true) {
             stateService.go("main.login", { returnState: targetState._identifier });
             return false;
         }
-        return true;        
+        return true;
     });
 
     // $transitions.onError({}, function (trans) {
@@ -134,9 +142,18 @@ myApp.run(["$rootScope", "Alertify", "$state", "$transitions", function ($rootSc
     // });
 }]);
 
-myApp.filter("momentDate", function(){
-    return function(input, format){
+myApp.filter("momentDate", function () {
+    return function (input, format) {
         return input.format(format);
+    }
+});
+
+myApp.filter("maxLength", function () {
+    return function (input, length) {
+        if (!input) return input;
+        var result = input.substring(0, length);
+        if (input.length > length) return result += "...";
+        return result;
     }
 });
 

@@ -1,30 +1,27 @@
 ﻿(function (module) {
     module.controller("OrderController", orderController);
-    orderController.$inject = ["$sce", "$scope", "$timeout", "orderService"];
-    function orderController($sce, $scope, $timeout, orderService) {
+    orderController.$inject = ["$sce", "$scope", "$timeout", "$state", "orderService"];
+    function orderController($sce, $scope, $timeout, $state, orderService) {
         var model = this;
-        model.goToWebsite = goToWebsite;
-        model.today = moment().format("dddd DD.MM.YYYY");
         model.createNewOrder = createNewOrder;
-        model.submitOrder = submitOrder;
         model.selectOrder = selectOrder;
-        model.removeOrderDetail = removeOrderDetail;
-        model.calculateOrderPrice = calculateOrderPrice;
-        model.editOrderDetail = editOrderDetail;
         model.removeOrder = removeOrder;
+        model.goToOrderDetail = goToOrderDetail;
+        model.lockOrder = lockOrder;
+        model.unlockOrder = unlockOrder;
 
         activate();
 
         function activate() {
-            getActiveOrders();
+            getOrders();
 
         }
 
-        function getActiveOrders() {
-            orderService.subscribeActiveOrders(function (data) {
+        function getOrders() {
+            orderService.subscribeOrders(function (data) {
                 $timeout(function () {
-                    console.log("update list active orders");
-                    model.activeOrders = data;
+                    model.orders = _.orderBy(data, "date", "desc");
+
                     if (model.selectedOrder) {
                         model.selectedOrder = _.find(model.activeOrders, { key: model.selectedOrder.key });
                     }
@@ -32,67 +29,50 @@
             });
         }
 
-
-        function goToWebsite() {
-            model.trustedWebsiteUrl = $sce.trustAsResourceUrl(model.websiteUrl);
-        }
-
         function createNewOrder() {
-            orderService.createNewOrder();
-
-
-        }
-        function submitOrder() {
-            if (!model.orderDetail.name || !model.orderDetail.desc) return;
-
-
-            var updateOrder = angular.copy(model.selectedOrder);
-
-            if (model.editOrderDetailIndex !== undefined) {
-                updateOrder.detail.splice(model.editOrderDetailIndex, 1, model.orderDetail);
-            }
-            else {
-                if (!updateOrder.detail) updateOrder.detail = [];
-                updateOrder.detail.push(model.orderDetail);
-            }
-
-            orderService.updateOrder(updateOrder).then(function () {
-                model.orderDetail = undefined;
-                model.editOrderDetailIndex = undefined;
-            });
+            if (!model.menuUrl) return;
+            var order = {
+                date: moment(),
+                status: "active",
+                detail: [],
+                menuUrl: model.menuUrl || ""
+            };
+            orderService.createNewOrder(order).then(function () { model.menuUrl = ""; });
         }
 
         function selectOrder(order) {
             model.selectedOrder = order;
-        }
+        }       
 
-        function removeOrderDetail(index) {
-            model.selectedOrder.detail.splice(index, 1);
-
-            var updateOrder = angular.copy(model.selectedOrder);
-            orderService.updateOrder(updateOrder);
-        }
-
-        function removeOrder(order, $event){
-            console.log("remove order");
-
+        function removeOrder(order, $event) {
             orderService.removeOrder(order);
-
 
             $event.stopPropagation();
             $event.preventDefault();
         }
 
-        function editOrderDetail(index, orderDetail) {
-            model.orderDetail = angular.copy(orderDetail);
-            model.editOrderDetailIndex = index;
+        function lockOrder(order, $event){
+            order.status = "locked";
+
+            orderService.updateOrder(order);
+
+            $event.stopPropagation();
+            $event.preventDefault();
         }
 
-        function calculateOrderPrice() {
-            return _.reduce(model.selectedOrder.detail, function (sum, item) {
-                if (isNaN(Number.parseFloat(item.price))) return sum += 0;
-                return sum += Number.parseFloat(item.price);
-            }, 0);
+        
+        function unlockOrder(order, $event){
+            order.status = "active";
+
+            orderService.updateOrder(order);
+
+            $event.stopPropagation();
+            $event.preventDefault();
+        }
+
+        function goToOrderDetail() {
+            if (!model.selectedOrder) return;
+            return $state.go("main.orderDetail", { key: model.selectedOrder.key });
         }
 
     }

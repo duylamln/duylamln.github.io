@@ -22,18 +22,14 @@
     function orderService($localStorage, $q, Alertify, convertService) {
         var database = firebase.database();
         this.createNewOrder = createNewOrder;
-        this.subscribeActiveOrders = subscribeActiveOrders;
-        this.subscribeOrderDetail = subscribeOrderDetail;
+        this.subscribeOrders = subscribeOrders;
+        this.subscribeOrder = subscribeOrder;
         this.updateOrder = updateOrder;
         this.removeOrder = removeOrder;
 
-        function createNewOrder() {
+        function createNewOrder(order) {
             var defer = $q.defer();
-            var order = {
-                date: moment(),
-                status: "active",
-                detail: []
-            };
+            
             convertService.convertMomentToString(order);
 
             if (!order.key) order.key = database.ref().child("orders").push().key;
@@ -88,8 +84,8 @@
             return defer.promise;
         }
 
-        function subscribeActiveOrders(callback) {
-            var weekFilter = database.ref("orders").orderByChild("status").equalTo("active").limitToFirst(5);
+        function subscribeOrders(callback) {
+            var weekFilter = database.ref("orders").orderByChild("date").limitToLast(10);
             weekFilter.on("value",
                 function (snapshot) {
                     if (!snapshot.exists()) {
@@ -113,19 +109,19 @@
                 });
         }
 
-        function subscribeOrderDetail(order, callback) {
-            var weekFilter = database.ref("orders").orderByChild("key").equalTo(order.key).limitToFirst(1);
+        function subscribeOrder(orderKey, callback) {
+            var weekFilter = database.ref("orders").orderByChild("key").equalTo(orderKey).limitToFirst(1);
             weekFilter.on("value",
                 function (snapshot) {
                     if (!snapshot.exists()) {
-                        callback([]);
+                        callback(null);
                     }
                     else {
-                        var newOrder = [];
+                        var order;
                         snapshot.forEach(function (childSnapshot) {
-                            newOrder = childSnapshot.val();
+                            order = childSnapshot.val();
                         })
-                        callback(newOrder.detail);
+                        callback(order);
                     }
                 },
                 function (error) {
