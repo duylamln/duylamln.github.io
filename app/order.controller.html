@@ -64,7 +64,7 @@
                                     <td>{{$index + 1}}</td>
                                     <td>{{orderDetail.name}}</td>
                                     <td>{{orderDetail.desc}}</td>
-                                    <td>{{orderDetail.price | currency: "₫ ":0}}</td>
+                                    <td>{{orderDetail.price | currency: "":0}}</td>
                                     <td>
                                             <i class="fas fa-edit" ng-click="model.editOrderDetail($index, orderDetail)"></i>
                                         <i class="fas fa-trash-alt" ng-click="model.removeOrderDetail($index)"></i>
@@ -72,7 +72,7 @@
                                 </tr>
                                 <tr ng-if="model.selectedOrder.detail && model.selectedOrder.detail.length > 0">
                                     <td colspan="3" class="text-center">Total</td>
-                                    <td>{{model.calculateOrderPrice() | currency: "₫ ":0 }}</td>
+                                    <td>{{model.calculateOrderPrice() | currency: "":0 }}</td>
                                 </tr>
                             </tbody>
                         </table>
