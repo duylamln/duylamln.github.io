@@ -7,11 +7,13 @@
                         <h4>List Order</h4>
                         <ul class="list-group">
                             <a href="" class="list-group-item list-group-item-action" ng-repeat="order in model.orders"
-                                ng-click="model.selectOrder(order)">
+                                ng-click="model.selectOrder(order)"
+                                ng-class="{active: order.key === model.selectedOrder.key}">
                                 <strong>{{order.menuUrl | maxLength:75}}</strong>
                                 <small>{{order.date.format('dddd DD.MM.YYYY hh:mm:ss')}}</small>
 
                                 <span class="fa-pull-right">
+                                    <i class="fas fa-copy" ng-click="model.copyOrderDetailLink(order, $event)"></i>
                                     <i class="fas fa-lock" ng-click="model.lockOrder(order, $event)" ng-if="order.status === 'active'"></i>
                                     <i class="fas fa-unlock-alt" ng-click="model.unlockOrder(order, $event)" ng-if="order.status === 'locked'"></i>
                                     <i class="fas fa-trash-alt" ng-click="model.removeOrder(order, $event)"></i>
