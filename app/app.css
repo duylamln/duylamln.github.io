@@ -102,6 +102,10 @@ color: lightseagreen;
     color: red;
     }
 
+
+    .timesheet i.fa-save{
+        color: blue;
+        }
 table tr.table-odd-row {
     background-color: antiquewhite;
 }

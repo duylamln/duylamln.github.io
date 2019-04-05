@@ -1,11 +1,12 @@
-﻿(function(module) {
+﻿(function (module) {
   module.controller("TimesheetController", timesheetController);
   timesheetController.$inject = [
     "timesheetService",
     "hotkeys",
-    "openProjectService"
+    "openProjectService",
+    "Alertify"
   ];
-  function timesheetController(timesheetService, hotkeys, openProjectService) {
+  function timesheetController(timesheetService, hotkeys, openProjectService, Alertify) {
     var model = this;
     model.selectedTimesheet;
     model.onTimesheetClick = onTimesheetClick;
@@ -22,6 +23,8 @@
     model.myWorkPackages;
     model.timeEntryActivities = [];
     model.onVersionChanged = onVersionChanged;
+    model.saveOPTimeEntry = saveOPTimeEntry;
+    model.reloadVersions = reloadVersions;
 
     activate();
 
@@ -29,19 +32,34 @@
       model.currentWeek = moment().week();
       model.weekNumber = moment().week();
       getWeeklyTimesheet(model.weekNumber);
-      getMyWorkPackages();
+      getVersions();
       getTimeEntryActivities();
       registerHotkeys();
     }
 
-    function getMyWorkPackages() {
+    function getVersions() {
       openProjectService
-        .getMyWorkPackages()
-        .then(function(workPackageCollection) {
-          model.versions = workPackageCollection.elements;
+        .getVersions()
+        .then(function (versionsCollection) {
+          model.versions = versionsCollection.elements;
           model.parentWorkPackages = _.reduce(
-            workPackageCollection.elements,
-            function(arr, item) {
+            versionsCollection.elements,
+            function (arr, item) {
+              return arr.concat(item.workPackages);
+            },
+            []
+          );
+        });
+    }
+
+    function reloadVersions() {
+      openProjectService
+        .reloadVersions()
+        .then(function (versionsCollection) {
+          model.versions = versionsCollection.elements;
+          model.parentWorkPackages = _.reduce(
+            versionsCollection.elements,
+            function (arr, item) {
               return arr.concat(item.workPackages);
             },
             []
@@ -52,7 +70,7 @@
     function getTimeEntryActivities() {
       openProjectService
         .getTimeEntryActivities()
-        .then(function(timeEntryActivities) {
+        .then(function (timeEntryActivities) {
           model.timeEntryActivities = timeEntryActivities;
         });
     }
@@ -61,7 +79,7 @@
       hotkeys.add({
         combo: "ctrl+s",
         description: "Save timesheet",
-        callback: function(e) {
+        callback: function (e) {
           saveTimesheet();
           e.preventDefault();
         },
@@ -70,7 +88,7 @@
       hotkeys.add({
         combo: "ctrl+a",
         description: "Add new time entry",
-        callback: function(e) {
+        callback: function (e) {
           addNewTimeEntry();
           e.preventDefault();
         },
@@ -97,12 +115,12 @@
         .endOf("week")
         .subtract(1, "days"); //Friday
 
-      timesheetService.getByWeekNumber(weekNumber).then(function(data) {
+      timesheetService.getByWeekNumber(weekNumber).then(function (data) {
         model.week = data;
         if (!model.week) model.week = emptyWeek(startWeek, endWeek, weekNumber);
 
         model.totalHours = calculateWeekTotalHours(model.week);
-        model.selectedTimesheet = _.find(model.week.timesheets, function(
+        model.selectedTimesheet = _.find(model.week.timesheets, function (
           timesheet
         ) {
           return equalDate(moment(), timesheet.date);
@@ -115,7 +133,7 @@
 
     function calculateWeekTotalHours(week) {
       return round(
-        _.sumBy(week.timesheets, function(item) {
+        _.sumBy(week.timesheets, function (item) {
           return item.totalHours;
         }),
         1
@@ -190,13 +208,13 @@
 
     function saveTimesheet() {
       calculateTimesheet();
-      timesheetService.saveTimesheet(model.week).then(function() {
+      timesheetService.saveTimesheet(model.week).then(function () {
         model.totalHours = calculateWeekTotalHours(model.week);
       });
     }
 
     function calculateTimesheet() {
-      _.each(model.week.timesheets, function(timesheet) {
+      _.each(model.week.timesheets, function (timesheet) {
         timesheet.totalHours = round(
           _.sumBy(timesheet.timeEntries, "duration"),
           1
@@ -255,7 +273,7 @@
       model.showWeekTimesheet = true;
       model.weekTimeEntries = _.reduce(
         model.week.timesheets,
-        function(all, timesheet) {
+        function (all, timesheet) {
           return all.concat(timesheet.timeEntries || []);
         },
         []
@@ -265,6 +283,46 @@
     function onVersionChanged() {
       if (!model.selectedVersion) return;
       model.parentWorkPackages = model.selectedVersion.workPackages;
+    }
+
+    function saveOPTimeEntry(index, timeEntry) {
+      if (!timeEntry.activityId) {
+        Alertify.error("Activity is required!");
+        return;
+      }
+      if (!timeEntry.workPackageId) {
+        Alertify.error("Work package is required!");
+        return;
+      }
+      if (!timeEntry.description) {
+        Alertify.error("Description is required!");
+        return;
+      }
+      if (!timeEntry.duration || timeEntry.duration === 0) {
+        Alertify.error("Duration is required!");
+        return;
+      }
+
+      var opTimeEntry = {
+        projectId: 2,
+        activityId: timeEntry.activityId,
+        workPackageId: timeEntry.workPackageId,
+        hours: timeEntry.duration,
+        comment: timeEntry.description,
+        spentOn: moment(timeEntry.startTime).format("YYYY-MM-DD")
+      };
+      if (timeEntry.opTimeEntryId && timeEntry.opTimeEntryId !== 0) {
+        opTimeEntry.id = timeEntry.opTimeEntryId;
+        openProjectService.updateTimeEntry(opTimeEntry)
+          .then(saveTimesheet);
+      }
+      else {
+        openProjectService.createTimeEntry(opTimeEntry)
+          .then(function (returnTimeEntry) {
+            timeEntry.opTimeEntryId = returnTimeEntry.id;
+            saveTimesheet();
+          });
+      }
     }
   }
 })(angular.module("myApp"));

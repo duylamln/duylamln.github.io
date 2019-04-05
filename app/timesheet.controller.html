@@ -3,31 +3,23 @@
     <md-input-container flex="50">
       <h2 class="md-display-1 mb-4">
         {{ model.week.title }}
-        <span
-          class="badge badge-info"
-          ng-click="model.showAllWeekTimeEntries()"
-          >{{ model.week.key }}</span
-        >
-        <span
-          class="badge badge-primary"
-          ng-click="model.showAllWeekTimeEntries()"
-          >{{ model.totalHours }}h</span
-        >
+        <span class="badge badge-info" ng-click="model.showAllWeekTimeEntries()">{{ model.week.key }}</span>
+        <span class="badge badge-primary" ng-click="model.showAllWeekTimeEntries()">{{ model.totalHours }}h</span>
       </h2>
     </md-input-container>
     <md-input-container flex="20"></md-input-container>
-    <md-input-container flex="30">
-      <md-select
-        ng-model="model.selectedVersion"
-        ng-change="model.onVersionChanged()"
-        placeholder="Version"
-      >
+    <md-input-container flex="20">
+      <md-select ng-model="model.selectedVersion" ng-change="model.onVersionChanged()" placeholder="Version">
         <md-optgroup label="Version">
           <md-option ng-repeat="item in model.versions" ng-value="item">
-            {{ item.title }}</md-option
-          >
+            {{ item.title }}</md-option>
         </md-optgroup>
       </md-select>
+    </md-input-container>
+    <md-input-container flex="5">
+      <md-icon ng-click="model.reloadVersions()">
+        <i class="fas fa-sync-alt"></i>
+      </md-icon>
     </md-input-container>
   </div>
 
@@ -37,20 +29,11 @@
         Prev
       </md-button>
     </md-grid-tile>
-    <md-grid-tile
-      md-colspan="2"
-      ng-repeat="timesheet in model.week.timesheets"
-      ng-click="model.onTimesheetClick(timesheet)"
-    >
-      <div
-        class="card flex-fill"
-        ng-class="{active: model.selectedTimesheet.id === timesheet.id}"
-      >
+    <md-grid-tile md-colspan="2" ng-repeat="timesheet in model.week.timesheets" ng-click="model.onTimesheetClick(timesheet)">
+      <div class="card flex-fill" ng-class="{active: model.selectedTimesheet.id === timesheet.id}">
         <div class="card-body">
           <div class="row">
-            <div
-              class="col-12 col-md-6 align-self-center text-center text-md-left"
-            >
+            <div class="col-12 col-md-6 align-self-center text-center text-md-left">
               <h4>{{ timesheet.totalHours }}</h4>
               <p class="mb-0">{{ timesheet.date.format("ddd DD.MM") }}</p>
             </div>
@@ -65,79 +48,61 @@
     </md-grid-tile>
   </md-grid-list>
   <div style="margin-top: 50px">
-    <div
-      layout="columns"
-      style="margin-top: 0px"
-      ng-repeat="timeEntry in model.selectedTimesheet.timeEntries"
-    >
+    <div layout="columns" style="margin-top: 0px" ng-repeat="timeEntry in model.selectedTimesheet.timeEntries">
       <md-input-container flex="10">
-        <label ng-if="$index === 0">Start time</label>
+        <label ng-if="$index === 0">Start</label>
         <md-icon class="name" ng-click="model.setStartTime(timeEntry)">
           <i class="fas fa-clock fa-lg"></i>
         </md-icon>
-        <input
-          type="text"
-          ui-mask="99:99"
-          ng-model="timeEntry.startTimeDisplay"
-          ng-change="model.onStartTimeChange(timeEntry)"
-        />
+        <input type="text" ui-mask="99:99" ng-model="timeEntry.startTimeDisplay" ng-change="model.onStartTimeChange(timeEntry)" />
       </md-input-container>
       <md-input-container flex="10">
-        <label ng-if="$index === 0">End time</label>
+        <label ng-if="$index === 0">End</label>
         <md-icon class="name" ng-click="model.setEndTime(timeEntry)">
           <i class="fas fa-clock fa-lg"></i>
         </md-icon>
-        <input
-          type="text"
-          ui-mask="99:99"
-          ng-model="timeEntry.endTimeDisplay"
-          ng-change="model.onEndTimeChange(timeEntry)"
-        />
+        <input type="text" ui-mask="99:99" ng-model="timeEntry.endTimeDisplay" ng-change="model.onEndTimeChange(timeEntry)" />
         <pre>{{ timeEntry.endTime.format("yyyyMMDD hhmm") }}</pre>
       </md-input-container>
-      <md-input-container flex="10">
+      <md-input-container flex="5">
         <label ng-if="$index === 0">Duration</label>
-        <input
-          type="text"
-          id="inlineFormInputName2"
-          ng-model="timeEntry.duration"
-        />
+        <input type="text" id="inlineFormInputName2" ng-model="timeEntry.duration" />
       </md-input-container>
-      <md-input-container flex="20">
+      <md-input-container flex="30">
+        <label>Open Project Task</label>
         <md-select ng-model="timeEntry.workPackageId" placeholder="Workpackage">
-          <md-optgroup
-            label="{{ parent.subject }}"
-            ng-repeat="parent in model.parentWorkPackages"
-          >
+          <md-optgroup label="{{ parent.subject }}" ng-repeat="parent in model.parentWorkPackages">
             <md-option ng-repeat="item in parent.children" ng-value="item.id">
-              {{ item.subject }}</md-option
-            >
+              {{ item.subject }}</md-option>
           </md-optgroup>
         </md-select>
       </md-input-container>
-      <md-input-container flex="20">
+      <md-input-container flex="10">
+        <label>Activity</label>
         <md-select ng-model="timeEntry.activityId" placeholder="Activity">
           <md-optgroup label="Activity">
-            <md-option
-              ng-repeat="item in model.timeEntryActivities"
-              ng-value="item.id"
-            >
-              {{ item.name }}</md-option
-            >
+            <md-option ng-repeat="item in model.timeEntryActivities" ng-value="item.id">
+              {{ item.name }}</md-option>
           </md-optgroup>
         </md-select>
       </md-input-container>
-
-      <md-input-container flex="30">
+      <md-input-container flex="25">
         <label ng-if="$index === 0">Description</label>
-        <input
-          type="text"
-          id="inlineFormInputName2"
-          ng-model="timeEntry.description"
-        />
-        <md-icon ng-click="model.deleteTimeEntry($index)">
-          <i class="fas fa-trash-alt fa-lg"></i>
-        </md-icon>
+        <input type="text" id="inlineFormInputName2" ng-model="timeEntry.description" />
+      </md-input-container>
+      <md-input-container flex="5">
+        <label ng-if="$index === 0">OpTeId</label>
+        <input type="text" id="inlineFormInputName2" ng-model="timeEntry.opTimeEntryId" />
+      </md-input-container>
+      <md-input-container flex="5">
+        <p>
+          <md-icon ng-click="model.saveOPTimeEntry($index, timeEntry)">
+            <i class="fas fa-save fa-lg"></i>
+          </md-icon>
+          <md-icon ng-click="model.deleteTimeEntry($index)">
+            <i class="fas fa-trash-alt fa-lg"></i>
+          </md-icon>
+        </p>
       </md-input-container>
     </div>
   </div>
@@ -154,10 +119,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            ng-repeat="timeEntry in model.weekTimeEntries"
-            ng-class="{'table-odd-row': timeEntry.startTime.day() % 2}"
-          >
+          <tr ng-repeat="timeEntry in model.weekTimeEntries" ng-class="{'table-odd-row': timeEntry.startTime.day() % 2}">
             <td>{{ timeEntry.startTime | momentDate: "DD.MM.YYYY" }}</td>
             <td>{{ timeEntry.startTime | momentDate: "hh:mm" }}</td>
             <td>{{ timeEntry.endTime | momentDate: "hh:mm" }}</td>
