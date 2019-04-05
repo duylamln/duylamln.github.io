@@ -1,4 +1,4 @@
-﻿<div class="order" ng-cloak>
+<div class="order" ng-cloak>
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm">
@@ -16,7 +16,8 @@
             <div class="col-sm">
                 <div class="row" ng-if="model.selectedOrder">
                     <div class="col">
-                        <h4>Order Detail
+                        <h4>
+                            Order Detail
                             <span class="badge badge-secondary" ng-if="model.selectedOrder.status === 'locked'">locked</span>
                             <span class="badge badge-primary" ng-if="model.selectedOrder.status === 'active'">active</span>
                         </h4>
@@ -61,16 +62,27 @@
                                 <div class="form-group">
                                     <label>Order</label>
                                     <input type="text" class="form-control" placeholder="would you like something ?"
-                                        ng-model="model.orderDetail.desc">
+                                           ng-model="model.orderDetail.desc">
                                 </div>
                                 <div class="form-group">
                                     <label>Price</label>
                                     <input type="text" class="form-control" placeholder="e.g. 54.000" ng-model="model.orderDetail.price">
                                 </div>
                                 <button type="submit" class="btn btn-primary" ng-click="model.submitOrderDetail()"
-                                    ng-disabled="!model.orderDetail.name || !model.orderDetail.desc">Submit</button>
+                                        ng-disabled="!model.orderDetail.name || !model.orderDetail.desc">
+                                    Submit
+                                </button>
                             </form>
                         </fieldset>
+                    </div>
+                    <div class="col-6">
+                        <h4>Order Group</h4>
+                        <table class="table">
+                            <tr ng-repeat="(key, value) in model.selectedOrder.detail | groupBy: 'desc'" ng-if="model.selectedOrder.detail && model.selectedOrder.detail.length > 0">
+                                <td colspan="3">{{key}}</td>
+                                <td>{{value.length}}</td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
             </div>
