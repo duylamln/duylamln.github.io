@@ -1,61 +1,34 @@
-﻿<div class="order" ng-cloak>
+<div class="order" ng-cloak>
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm">
                 <div class="row">
-                    <div class="col">
-                        <h4>List Order</h4>
-                        <ul class="list-group">
-                            <a href="" class="list-group-item list-group-item-action" ng-repeat="order in model.orders"
-                                ng-click="model.selectOrder(order)"
-                                ng-class="{active: order.key === model.selectedOrder.key}">
-                                <strong>{{order.menuUrl | maxLength:75}}</strong>
-                                <small>{{order.date.format('dddd DD.MM.YYYY hh:mm:ss')}}</small>
-
-                                <span class="fa-pull-right">
-                                    <i class="fas fa-copy" ng-click="model.copyOrderDetailLink(order, $event)"></i>
-                                    <i class="fas fa-lock" ng-click="model.lockOrder(order, $event)" ng-if="order.status === 'active'"></i>
-                                    <i class="fas fa-unlock-alt" ng-click="model.unlockOrder(order, $event)" ng-if="order.status === 'locked'"></i>
-                                    <i class="fas fa-trash-alt" ng-click="model.removeOrder(order, $event)"></i>
-                                </span>
-                            </a>
-                        </ul>
+                    <div class="col" ng-if="model.trustedWebsiteUrl">
+                        <iframe class="order-website" ng-src="{{model.trustedWebsiteUrl}}"></iframe>
                     </div>
-                </div>
-                <div class="row" style="margin-top: 40px">
-                    <div class="col">
-                        <form>
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" placeholder="https://foody.com/" ng-model="model.menuUrl">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-dark" ng-disabled="!model.menuUrl" ng-click="model.createNewOrder()">Create
-                                        new order</span>
-                                </div>
-                            </div>
-                        </form>
+                    <div class="col" ng-if="!model.trustedWebsiteUrl">
+                        Nothing to show
                     </div>
                 </div>
             </div>
+
+
             <div class="col-sm">
                 <div class="row" ng-if="model.selectedOrder">
                     <div class="col">
-                        <h4 class="order-detail-link" ng-click="model.goToOrderDetail()">Order Detail 
-                                <span class="badge badge-secondary" ng-if="model.selectedOrder.status === 'locked'">locked</span>
-                                <span class="badge badge-primary" ng-if="model.selectedOrder.status === 'active'">active</span>
+                        <h4>
+                            Order Detail
+                            <span class="badge badge-secondary" ng-if="model.selectedOrder.status === 'locked'">locked</span>
+                            <span class="badge badge-primary" ng-if="model.selectedOrder.status === 'active'">active</span>
                         </h4>
-                        <!-- <a href="" class="alert-link" ng-click="model.goToOrderDetail()">
-                            <span class="h4">Order Detail</span>
-                            
-                        </a> -->
-
-
-                        <table class="table table-bordered">
+                        <table class="table">
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Order</th>
                                     <th scope="col">Price</th>
+                                    <th scope="col" ng-if="model.selectedOrder.status === 'active'">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -64,12 +37,51 @@
                                     <td>{{orderDetail.name}}</td>
                                     <td>{{orderDetail.desc}}</td>
                                     <td>{{orderDetail.price | currency: "":0}}</td>
+                                    <td ng-if="model.selectedOrder.status === 'active'">
+                                        <i class="fas fa-edit" ng-click="model.editOrderDetail($index, orderDetail)"></i>
+                                        <i class="fas fa-trash-alt" ng-click="model.removeOrderDetail($index)"></i>
+                                    </td>
                                 </tr>
                                 <tr ng-if="model.selectedOrder.detail && model.selectedOrder.detail.length > 0">
                                     <td colspan="3" class="text-center">Total</td>
                                     <td>{{model.calculateOrderPrice() | currency: "":0 }}</td>
                                 </tr>
                             </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" ng-if="model.selectedOrder && model.selectedOrder.status === 'active'" style="margin-top: 40px">
+                    <div class="col-6">
+                        <fieldset class="fieldset-border">
+                            <legend>Order Detail:</legend>
+                            <form>
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    <input type="text" class="form-control" placeholder="your name" ng-model="model.orderDetail.name">
+                                </div>
+                                <div class="form-group">
+                                    <label>Order</label>
+                                    <input type="text" class="form-control" placeholder="would you like something ?"
+                                           ng-model="model.orderDetail.desc">
+                                </div>
+                                <div class="form-group">
+                                    <label>Price</label>
+                                    <input type="text" class="form-control" placeholder="e.g. 54.000" ng-model="model.orderDetail.price">
+                                </div>
+                                <button type="submit" class="btn btn-primary" ng-click="model.submitOrderDetail()"
+                                        ng-disabled="!model.orderDetail.name || !model.orderDetail.desc">
+                                    Submit
+                                </button>
+                            </form>
+                        </fieldset>
+                    </div>
+                    <div class="col-6">
+                        <h4>Order Group</h4>
+                        <table class="table">
+                            <tr ng-repeat="(key, value) in model.selectedOrder.detail | groupBy: 'desc'" ng-if="model.selectedOrder.detail && model.selectedOrder.detail.length > 0">
+                                <td colspan="3">{{key}}</td>
+                                <td>{{value.length}}</td>
+                            </tr>
                         </table>
                     </div>
                 </div>
