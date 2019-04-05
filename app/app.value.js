@@ -1,4 +1,4 @@
-﻿(function(module) {
+﻿(function (module) {
   module.value("appValues", appValues());
 
   function appValues() {
@@ -17,21 +17,35 @@
       new Date(2019, 0, 23),
       new Date(2019, 1, 07),
       new Date(2019, 1, 21),
-      new Date(2019, 2, 07),
-      new Date(2019, 2, 21),
-      new Date(2019, 3, 04),
-      new Date(2019, 3, 18),
-      new Date(2019, 4, 02)
+      new Date(2019, 2, 06),
+      new Date(2019, 2, 20),
+      new Date(2019, 3, 03),
+      new Date(2019, 3, 17),
+      new Date(2019, 4, 01),
+      new Date(2019, 4, 15),
+      new Date(2019, 4, 29),
+      new Date(2019, 5, 12),
+      new Date(2019, 5, 26),
+      new Date(2019, 6, 10),
+      new Date(2019, 6, 24),
+      new Date(2019, 7, 07),
+      new Date(2019, 7, 21),
+      new Date(2019, 8, 4),
+      new Date(2019, 8, 18),
+      new Date(2019, 9, 02),
+      new Date(2019, 9, 16),
+      new Date(2019, 9, 30)
     ];
+
 
     var sprintDefine = buildSprintDates(deliveryDates);
 
     /*
-        Sunday: 0,
-        Monday: 1
-        ...
-        Satuday: 6
-         */
+    Sunday: 0,
+    Monday: 1
+    ...
+    Satuday: 6
+     */
     var sprintActivityDefine = [
       {
         day: [1, 2],
@@ -86,7 +100,7 @@
     }
      */
   function buildSprintDates(deliveryDates) {
-    return _.map(deliveryDates, function(item) {
+    return _.map(deliveryDates, function (item) {
       var momentDate = moment(item);
       var start = moment(item)
         .subtract(2, "weeks")
@@ -106,7 +120,7 @@
         to: end,
         endWeek1: endWeek1,
         startWeek2: startWeek2
-      };
+      }
     });
   }
-})(angular.module("myApp"));
+})(angular.module("myApp"))

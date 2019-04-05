@@ -1,4 +1,4 @@
-﻿(function (module) {
+(function (module) {
     module.controller("OrderDetailController", orderDetailController);
     orderDetailController.$inject = ["$sce", "$scope", "$timeout", "$stateParams", "orderService"];
     function orderDetailController($sce, $scope, $timeout, $stateParams, orderService) {
@@ -61,4 +61,10 @@
         }
 
     }
+    module.filter('groupBy', function () {
+        return _.memoize(function (items, field) {
+            return _.groupBy(items, field);
+        }
+        );
+    });
 })(angular.module("myApp"));
