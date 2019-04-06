@@ -85,7 +85,7 @@
       sprintDefine: sprintDefine,
       sprintActivityDefine: sprintActivityDefine,
       deliveryDates: deliveryDates,
-      baseApi: "http://localhost:56984/"
+      baseApi: "http://crawler.local/"
     };
   }
 

@@ -17,7 +17,7 @@
       </md-select>
     </md-input-container>
     <md-input-container flex="5">
-      <md-icon ng-click="model.reloadVersions()">
+      <md-icon ng-click="model.getVersions()">
         <i class="fas fa-sync-alt"></i>
       </md-icon>
     </md-input-container>
@@ -99,7 +99,7 @@
           <md-icon ng-click="model.saveOPTimeEntry($index, timeEntry)">
             <i class="fas fa-save fa-lg"></i>
           </md-icon>
-          <md-icon ng-click="model.deleteTimeEntry($index)">
+          <md-icon ng-click="model.deleteTimeEntry($index, timeEntry)">
             <i class="fas fa-trash-alt fa-lg"></i>
           </md-icon>
         </p>

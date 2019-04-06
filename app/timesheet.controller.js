@@ -24,7 +24,7 @@
     model.timeEntryActivities = [];
     model.onVersionChanged = onVersionChanged;
     model.saveOPTimeEntry = saveOPTimeEntry;
-    model.reloadVersions = reloadVersions;
+    model.getVersions = getVersions;
 
     activate();
 
@@ -32,14 +32,14 @@
       model.currentWeek = moment().week();
       model.weekNumber = moment().week();
       getWeeklyTimesheet(model.weekNumber);
-      getVersions();
-      getTimeEntryActivities();
+      getVersions(true);
+      getTimeEntryActivities(true);
       registerHotkeys();
     }
 
-    function getVersions() {
+    function getVersions(notReload) {
       openProjectService
-        .getVersions()
+        .getVersions(notReload)
         .then(function (versionsCollection) {
           model.versions = versionsCollection.elements;
           model.parentWorkPackages = _.reduce(
@@ -52,24 +52,9 @@
         });
     }
 
-    function reloadVersions() {
+    function getTimeEntryActivities(notReload) {
       openProjectService
-        .reloadVersions()
-        .then(function (versionsCollection) {
-          model.versions = versionsCollection.elements;
-          model.parentWorkPackages = _.reduce(
-            versionsCollection.elements,
-            function (arr, item) {
-              return arr.concat(item.workPackages);
-            },
-            []
-          );
-        });
-    }
-
-    function getTimeEntryActivities() {
-      openProjectService
-        .getTimeEntryActivities()
+        .getTimeEntryActivities(notReload)
         .then(function (timeEntryActivities) {
           model.timeEntryActivities = timeEntryActivities;
         });
@@ -264,8 +249,17 @@
       });
     }
 
-    function deleteTimeEntry(index) {
-      model.selectedTimesheet.timeEntries.splice(index, 1);
+    function deleteTimeEntry(index, timeEntry) {
+      if (timeEntry.opTimeEntryId) {
+        openProjectService.deleteTimeEntry(timeEntry.opTimeEntryId)
+          .then(function () {
+            model.selectedTimesheet.timeEntries.splice(index, 1);
+            saveTimesheet();
+          });
+      }
+      else {
+        model.selectedTimesheet.timeEntries.splice(index, 1);
+      }
     }
 
     function showAllWeekTimeEntries() {
