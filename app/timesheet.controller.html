@@ -29,7 +29,8 @@
         Prev
       </md-button>
     </md-grid-tile>
-    <md-grid-tile md-colspan="2" ng-repeat="timesheet in model.week.timesheets" ng-click="model.onTimesheetClick(timesheet)">
+    <md-grid-tile md-colspan="2" ng-repeat="timesheet in model.week.timesheets"
+      ng-click="model.onTimesheetClick(timesheet)">
       <div class="card flex-fill" ng-class="{active: model.selectedTimesheet.id === timesheet.id}">
         <div class="card-body">
           <div class="row">
@@ -54,14 +55,16 @@
         <md-icon class="name" ng-click="model.setStartTime(timeEntry)">
           <i class="fas fa-clock fa-lg"></i>
         </md-icon>
-        <input type="text" ui-mask="99:99" ng-model="timeEntry.startTimeDisplay" ng-change="model.onStartTimeChange(timeEntry)" />
+        <input type="text" ui-mask="99:99" ng-model="timeEntry.startTimeDisplay"
+          ng-change="model.onStartTimeChange(timeEntry)" />
       </md-input-container>
       <md-input-container flex="10">
         <label ng-if="$index === 0">End</label>
         <md-icon class="name" ng-click="model.setEndTime(timeEntry)">
           <i class="fas fa-clock fa-lg"></i>
         </md-icon>
-        <input type="text" ui-mask="99:99" ng-model="timeEntry.endTimeDisplay" ng-change="model.onEndTimeChange(timeEntry)" />
+        <input type="text" ui-mask="99:99" ng-model="timeEntry.endTimeDisplay"
+          ng-change="model.onEndTimeChange(timeEntry)" />
         <pre>{{ timeEntry.endTime.format("yyyyMMDD hhmm") }}</pre>
       </md-input-container>
       <md-input-container flex="5">
@@ -69,7 +72,7 @@
         <input type="text" id="inlineFormInputName2" ng-model="timeEntry.duration" />
       </md-input-container>
       <md-input-container flex="30">
-        <label>Open Project Task</label>
+        <label ng-if="$index === 0">Open Project Task</label>
         <md-select ng-model="timeEntry.workPackageId" placeholder="Workpackage">
           <md-optgroup label="{{ parent.subject }}" ng-repeat="parent in model.parentWorkPackages">
             <md-option ng-repeat="item in parent.children" ng-value="item.id">
@@ -78,7 +81,7 @@
         </md-select>
       </md-input-container>
       <md-input-container flex="10">
-        <label>Activity</label>
+        <label ng-if="$index === 0">Activity</label>
         <md-select ng-model="timeEntry.activityId" placeholder="Activity">
           <md-optgroup label="Activity">
             <md-option ng-repeat="item in model.timeEntryActivities" ng-value="item.id">
@@ -119,7 +122,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="timeEntry in model.weekTimeEntries" ng-class="{'table-odd-row': timeEntry.startTime.day() % 2}">
+          <tr ng-repeat="timeEntry in model.weekTimeEntries"
+            ng-class="{'table-odd-row': timeEntry.startTime.day() % 2}">
             <td>{{ timeEntry.startTime | momentDate: "DD.MM.YYYY" }}</td>
             <td>{{ timeEntry.startTime | momentDate: "hh:mm" }}</td>
             <td>{{ timeEntry.endTime | momentDate: "hh:mm" }}</td>

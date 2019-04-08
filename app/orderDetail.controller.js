@@ -5,6 +5,10 @@
         var model = this;
         var orderKey = $stateParams.key;
 
+        model.orderDetail = {
+            name: user || user.displayName
+        }
+
         model.submitOrderDetail = submitOrderDetail;
         model.removeOrderDetail = removeOrderDetail;
         model.calculateOrderPrice = calculateOrderPrice;
@@ -13,14 +17,14 @@
         activate();
 
         function activate() {
-            orderService.subscribeOrder(orderKey, function(data){
-                $timeout(function(){
+            orderService.subscribeOrder(orderKey, function (data) {
+                $timeout(function () {
                     model.selectedOrder = data;
                     model.trustedWebsiteUrl = $sce.trustAsResourceUrl(model.selectedOrder.menuUrl);
                 });
             });
         }
-       
+
         function submitOrderDetail() {
             if (!model.orderDetail.name || !model.orderDetail.desc) return;
 
@@ -39,7 +43,7 @@
                 model.orderDetail = undefined;
                 model.editOrderDetailIndex = undefined;
             });
-        }      
+        }
 
         function removeOrderDetail(index) {
             model.selectedOrder.detail.splice(index, 1);
