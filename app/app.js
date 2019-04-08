@@ -132,10 +132,6 @@ myApp.run(["$rootScope", "Alertify", "$state", "$transitions", function ($rootSc
             stateService.go("main.login", { returnState: targetState._identifier });
             return false;
         }
-        if (targetState._identifier === "main.timesheet" && window.user && window.user.uid !== "RtWOkvlr0VdwqMwWEXOYyuap8FO2") {
-            stateService.go("main.login");
-            return false;
-        }
         return true;
     });
 

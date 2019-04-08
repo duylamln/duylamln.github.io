@@ -38,20 +38,24 @@
 
         function getByWeekNumber(weekNumber) {
             var defer = $q.defer();
-            var weekFilter = database.ref("weeks").orderByChild("number").equalTo(weekNumber).limitToFirst(1);
+            var { uid } = firebase.auth().currentUser;
+            var weekFilter = database.ref("weeks").orderByChild("user/uid").equalTo(uid).limitToFirst(100);
             weekFilter.once("value",
                 function (snapshot) {
                     if (!snapshot.exists()) {
                         defer.resolve(null);
                     }
                     else {
-                        snapshot.forEach(function(childSnapshot){                            
-                            var key= childSnapshot.key;
+                        snapshot.forEach(function (childSnapshot) {
                             var weekData = childSnapshot.val();
-                            weekData.key = key;
-                            convertService.convertStringToMoment(weekData);
-                            defer.resolve(weekData);
+                            if (weekData.number === weekNumber) {
+                                var key = childSnapshot.key;
+                                weekData.key = key;
+                                convertService.convertStringToMoment(weekData);
+                                defer.resolve(weekData);
+                            }
                         })
+                        defer.resolve(null);
                     }
                 },
                 function (error) {
@@ -65,6 +69,12 @@
         function saveTimesheet(week) {
             var defer = $q.defer();
 
+            var { uid, email, displayName } = firebase.auth().currentUser;
+            week.user = {
+                uid: uid,
+                email: email,
+                displayName: displayName
+            };
             var datapost = angular.copy(week);
             convertService.convertMomentToString(datapost);
 
