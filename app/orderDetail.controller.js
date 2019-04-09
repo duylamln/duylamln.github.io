@@ -4,7 +4,7 @@
     function orderDetailController($sce, $scope, $timeout, $stateParams, orderService) {
         var model = this;
         var orderKey = $stateParams.key;
-        var { displayName } = firebase.auth().currentUser;
+        var { displayName } = firebase.auth().currentUser || "";
         model.orderDetail = {
             name: displayName
         }
