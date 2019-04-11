@@ -75,7 +75,7 @@
                             </form>
                         </fieldset>
                     </div>
-                    <div class="col-6">
+                    <div class="col-6" ng-if="model.selectedOrder.detail">
                         <h4>Order Group</h4>
                         <table class="table">
                             <tr ng-repeat="(key, value) in model.selectedOrder.detail | groupBy: 'desc'" ng-if="model.selectedOrder.detail && model.selectedOrder.detail.length > 0">
