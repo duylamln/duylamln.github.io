@@ -6,7 +6,8 @@ var myApp = angular.module("myApp", [
     "Alertify",
     "ngMaterial",
     "ngMessages",
-    "cfp.hotkeys"
+    "cfp.hotkeys",
+    "angular-loading-bar"
 ]);
 
 angular.element(function () {
