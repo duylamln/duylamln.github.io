@@ -27,9 +27,14 @@
         this.updateOrder = updateOrder;
         this.removeOrder = removeOrder;
 
+        this.getFeaturedOrders = getFeaturedOrders;
+        this.addFeaturedOrder = addFeaturedOrder;
+        this.removeFeaturedOrder = removeFeaturedOrder;
+        this.updateFeaturedOrder = updateFeatureOrder;
+
         function createNewOrder(order) {
             var defer = $q.defer();
-            
+
             convertService.convertMomentToString(order);
 
             if (!order.key) order.key = database.ref().child("orders").push().key;
@@ -128,57 +133,82 @@
                     Alertify.error(error);
                     defer.reject(error);
                 });
-
         }
 
+        function getFeaturedOrders(callback) {
+            var featuredOrder = database.ref("featuredOrders").orderByChild("key");
+            featuredOrder.on("value",
+                function (snapshot) {
+                    if (!snapshot.exists()) {
+                        callback([]);
+                    }
+                    else {
+                        var result = [];
+                        snapshot.forEach(function (childSnapshot) {
+                            result.push(childSnapshot.val());
+                        })
+                        callback(result);
+                    }
+                },
+                function (error) {
+                    Alertify.error(error);
+                    defer.reject(error);
+                });
+        }
 
-        // function getByWeekNumber(weekNumber) {
-        //     var defer = $q.defer();
-        //     var weekFilter = database.ref("weeks").orderByChild("number").equalTo(weekNumber).limitToFirst(1);
-        //     weekFilter.once("value",
-        //         function (snapshot) {
-        //             if (!snapshot.exists()) {
-        //                 defer.resolve(null);
-        //             }
-        //             else {
-        //                 snapshot.forEach(function(childSnapshot){                            
-        //                     var key= childSnapshot.key;
-        //                     var weekData = childSnapshot.val();
-        //                     weekData.key = key;
-        //                     convertService.convertStringToMoment(weekData);
-        //                     defer.resolve(weekData);
-        //                 })
-        //             }
-        //         },
-        //         function (error) {
-        //             Alertify.error(error);
-        //             defer.reject(error);
-        //         });
+        function addFeaturedOrder(order, callback) {
+            var defer = $q.defer();
+            var featuredOrder = order;
 
-        //     return defer.promise;
-        // }
+            if (!featuredOrder.key) featuredOrder.key = database.ref().child("featuredOrders").push().key;
+            database.ref("featuredOrders/" + featuredOrder.key)
+                .set(featuredOrder, function (error) {
+                    if (error) {
+                        Alertify.error(error);
+                        defer.reject(error);
+                    }
+                    else {
+                        Alertify.success("Featured Order created!");
+                        defer.resolve();
+                    }
+                });
+            return defer.promise;
+        }
 
-        // function saveTimesheet(week) {
-        //     var defer = $q.defer();
+        function removeFeaturedOrder(order, callback) {
+            var defer = $q.defer();
+            database.ref("featuredOrders/" + order.key)
+                .remove(function (error) {
+                    if (error) {
+                        Alertify.error(error);
+                        defer.reject(error);
+                    }
+                    else {
+                        Alertify.success("Featured Order removed!");
+                        defer.resolve();
+                    }
+                });
+            return defer.promise;
+        }
 
-        //     var datapost = angular.copy(week);
-        //     convertService.convertMomentToString(datapost);
+        function updateFeatureOrder(order, callback) {
+            var defer = $q.defer();
 
-        //     if (!datapost.key) datapost.key = database.ref().child("weeks").push().key;
-        //     database.ref("weeks/" + datapost.key)
-        //         .set(datapost, function (error) {
-        //             if (error) {
-        //                 Alertify.error(error);
-        //                 defer.reject(error);
-        //             }
-        //             else {
-        //                 Alertify.success("Timesheet saved!");
-        //                 defer.resolve();
-        //             }
-        //         });
-        //     return defer.promise;
-        // }
-        // return this;
+            var datapost = angular.copy(order);
+
+            database.ref("featuredOrders/" + datapost.key)
+                .set(datapost, function (error) {
+                    if (error) {
+                        Alertify.error(error);
+                        defer.reject(error);
+                    }
+                    else {
+                        Alertify.success("Featured Order updated!");
+                        defer.resolve();
+                    }
+                });
+            return defer.promise;
+        }
     }
 
 

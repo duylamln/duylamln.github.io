@@ -9,13 +9,20 @@
                             <a href="" class="list-group-item list-group-item-action" ng-repeat="order in model.orders"
                                 ng-click="model.selectOrder(order)"
                                 ng-class="{active: order.key === model.selectedOrder.key}">
-                                <strong>{{order.menuUrl | maxLength:75}}</strong>
-                                <small>{{order.date.format('dddd DD.MM.YYYY hh:mm:ss')}}</small>
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{order.name || "Toocha trà sữa ko mập"}}</h5>
+                                    <small>{{order.date | humanize}}</small>
+                                </div>
+                                <p class="mb-1">{{order.menuUrl | maxLength:100}}</p>
+                                <small>{{order.date.format('dddd DD.MM.YYYY HH:mm:ss')}} - {{order.user.name}}</small>
 
                                 <span class="fa-pull-right">
+                                    <i class="fas fa-star" ng-click="model.addFeaturedOrder(order, $event)"></i>
                                     <i class="fas fa-copy" ng-click="model.copyOrderDetailLink(order, $event)"></i>
-                                    <i class="fas fa-lock" ng-click="model.lockOrder(order, $event)" ng-if="order.status === 'active'"></i>
-                                    <i class="fas fa-unlock-alt" ng-click="model.unlockOrder(order, $event)" ng-if="order.status === 'locked'"></i>
+                                    <i class="fas fa-lock" ng-click="model.lockOrder(order, $event)"
+                                        ng-if="order.status === 'active'"></i>
+                                    <i class="fas fa-unlock-alt" ng-click="model.unlockOrder(order, $event)"
+                                        ng-if="order.status === 'locked'"></i>
                                     <i class="fas fa-trash-alt" ng-click="model.removeOrder(order, $event)"></i>
                                 </span>
                             </a>
@@ -23,25 +30,34 @@
                     </div>
                 </div>
                 <div class="row" style="margin-top: 40px">
-                    <div class="col">
-                        <form>
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" placeholder="https://foody.com/" ng-model="model.menuUrl">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-dark" ng-disabled="!model.menuUrl" ng-click="model.createNewOrder()">Create
-                                        new order</span>
-                                </div>
-                            </div>
-                        </form>
+                    <div class="col-5">
+                        <input type="text" class="form-control" placeholder="Toocha" ng-model="model.orderName">
                     </div>
+                    <div class="col-5">
+                        <input type="text" class="form-control" placeholder="https://foody.com/"
+                            ng-model="model.menuUrl">
+
+                    </div>
+                    <div class="col-2">
+                        <button type="submit" class="btn btn-outline-dark" ng-disabled="!model.menuUrl"
+                            ng-click="model.createNewOrder()">Create Order</span>
+                    </div>
+                </div>
+                <div style="margin-top: 40px">
+                    <featured-order items="model.featuredOrders"
+                        on-selected-featured-order-change="model.onSelectedFeaturedOrderChange({featuredOrder})"
+                        on-create-order="model.onCreateOrderFromFeatured({featuredOrder})">
+                    </featured-order>
                 </div>
             </div>
             <div class="col-sm">
                 <div class="row" ng-if="model.selectedOrder">
                     <div class="col">
-                        <h4 class="order-detail-link" ng-click="model.goToOrderDetail()">Order Detail 
-                                <span class="badge badge-secondary" ng-if="model.selectedOrder.status === 'locked'">locked</span>
-                                <span class="badge badge-primary" ng-if="model.selectedOrder.status === 'active'">active</span>
+                        <h4 class="order-detail-link" ng-click="model.goToOrderDetail()">Order Detail
+                            <span class="badge badge-secondary"
+                                ng-if="model.selectedOrder.status === 'locked'">locked</span>
+                            <span class="badge badge-primary"
+                                ng-if="model.selectedOrder.status === 'active'">active</span>
                         </h4>
                         <!-- <a href="" class="alert-link" ng-click="model.goToOrderDetail()">
                             <span class="h4">Order Detail</span>

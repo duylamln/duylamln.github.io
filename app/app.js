@@ -158,7 +158,13 @@ myApp.filter("maxLength", function () {
     }
 });
 
+myApp.filter("humanize", function () {
+    return function (input) {
+        if (!input) return input;
 
+        return moment.duration(input.diff(moment())).humanize();
+    }
+});
 window.copyToClipboard = function (str) {
     const el = document.createElement('textarea');  // Create a <textarea> element
     el.value = str;                                 // Set its value to the string that you want copied

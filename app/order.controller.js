@@ -1,6 +1,6 @@
 ﻿(function (module) {
     module.controller("OrderController", orderController);
-    orderController.$inject = ["$sce", "$scope", "$timeout", "$state", "orderService","Alertify"];
+    orderController.$inject = ["$sce", "$scope", "$timeout", "$state", "orderService", "Alertify"];
     function orderController($sce, $scope, $timeout, $state, orderService, Alertify) {
         var model = this;
         model.createNewOrder = createNewOrder;
@@ -11,12 +11,19 @@
         model.unlockOrder = unlockOrder;
         model.calculateOrderPrice = calculateOrderPrice;
         model.copyOrderDetailLink = copyOrderDetailLink;
+        model.addFeaturedOrder = addFeaturedOrder;
+        model.getFeaturedOrders = getFeaturedOrders;
+        model.onSelectedFeaturedOrderChange = onSelectedFeaturedOrderChange;
+        model.onCreateOrderFromFeatured = onCreateOrderFromFeatured;
+        model.humanizeOrderTime = humanizeOrderTime;
+
+        var user = firebase.auth().currentUser;
 
         activate();
 
         function activate() {
             getOrders();
-
+            getFeaturedOrders();
         }
 
         function getOrders() {
@@ -36,15 +43,29 @@
             });
         }
 
+        function getFeaturedOrders() {
+            orderService.getFeaturedOrders(function (featuredOrders) {
+                model.featuredOrders = featuredOrders;
+            });
+        }
+
         function createNewOrder() {
             if (!model.menuUrl) return;
             var order = {
                 date: moment(),
                 status: "active",
                 detail: [],
-                menuUrl: model.menuUrl || ""
+                menuUrl: model.menuUrl || "",
+                user: {
+                    key: user.uid,
+                    name: user.displayName
+                },
+                name: model.orderName
             };
-            orderService.createNewOrder(order).then(function () { model.menuUrl = ""; });
+            return orderService.createNewOrder(order).then(function () {
+                model.menuUrl = "";
+                model.orderName = "";
+            });
         }
 
         function selectOrder(order) {
@@ -61,7 +82,7 @@
         function lockOrder(order, $event) {
             order.status = "locked";
 
-            orderService.updateOrder(order).then(function(){
+            orderService.updateOrder(order).then(function () {
                 Alertify.success("Order " + order.key + " locked");
             });
 
@@ -73,7 +94,7 @@
         function unlockOrder(order, $event) {
             order.status = "active";
 
-            orderService.updateOrder(order).then(function(){
+            orderService.updateOrder(order).then(function () {
                 Alertify.success("Order " + order.key + " activated");
             });
 
@@ -93,13 +114,52 @@
             }, 0);
         }
 
-        function copyOrderDetailLink(order, $event){
+        function copyOrderDetailLink(order, $event) {
             var orderDetailHref = location.href + "/" + order.key;
             copyToClipboard(orderDetailHref);
-            Alertify.success("Copied: "+ orderDetailHref);
+            Alertify.success("Copied: " + orderDetailHref);
 
             $event.stopPropagation();
             $event.preventDefault();
+        }
+
+        function addFeaturedOrder(order) {
+            var { name, menuUrl } = order;
+            if (isExistedFeaturedOrder(name, menuUrl)) {
+                Alertify.error("This order has been featured already.");
+                return;
+            }
+            var featuredOrder = {
+                name: name,
+                menuUrl: menuUrl,
+                count: 1
+            };
+            orderService.addFeaturedOrder(featuredOrder);
+        }
+
+        function isExistedFeaturedOrder(name, menuUrl) {
+            return _.find(model.featuredOrders, { name: name, menuUrl: menuUrl }) != undefined;
+        }
+        function onSelectedFeaturedOrderChange({ featuredOrder }) {
+            var { name, menuUrl } = featuredOrder;
+            model.orderName = name;
+            model.menuUrl = menuUrl;
+        }
+
+        function onCreateOrderFromFeatured({ featuredOrder }) {
+            var { name, menuUrl } = featuredOrder;
+            model.orderName = name;
+            model.menuUrl = menuUrl;
+
+            createNewOrder().then(function () {
+                if (featuredOrder.count) featuredOrder.count++;
+                else { featuredOrder.count = 1; }
+                orderService.updateFeaturedOrder(featuredOrder);
+            });
+        }
+
+        function humanizeOrderTime(order) {
+            return moment.humanize(order.data);
         }
 
     }
