@@ -10,7 +10,8 @@
                                 ng-click="model.selectOrder(order)"
                                 ng-class="{active: order.key === model.selectedOrder.key}">
                                 <div class="d-flex w-100 justify-content-between">
-                                    <h5 class="mb-1">{{order.name || "Toocha trà sữa ko mập"}}</h5>
+                                    <h5 class="mb-1">{{order.name || "Toocha trà sữa ko mập"}} -
+                                        {{order.discount || 0}}% off</h5>
                                     <small>{{order.date | humanize}}</small>
                                 </div>
                                 <p class="mb-1">{{order.menuUrl | maxLength:100}}</p>
