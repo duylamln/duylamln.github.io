@@ -60,7 +60,8 @@
                     key: user.uid,
                     name: user.displayName
                 },
-                name: model.orderName
+                name: model.orderName,
+                discount: model.discount | 0
             };
             return orderService.createNewOrder(order).then(function () {
                 model.menuUrl = "";

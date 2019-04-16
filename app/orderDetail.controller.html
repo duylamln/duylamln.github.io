@@ -17,9 +17,12 @@
                 <div class="row" ng-if="model.selectedOrder">
                     <div class="col">
                         <h4>
-                            Order Detail
-                            <span class="badge badge-secondary" ng-if="model.selectedOrder.status === 'locked'">locked</span>
-                            <span class="badge badge-primary" ng-if="model.selectedOrder.status === 'active'">active</span>
+                            {{model.selectedOrder.name}} - <small>Discount:</small>
+                            {{model.selectedOrder.discount || 0}}%
+                            <span class="badge badge-secondary"
+                                ng-if="model.selectedOrder.status === 'locked'">locked</span>
+                            <span class="badge badge-primary"
+                                ng-if="model.selectedOrder.status === 'active'">active</span>
                         </h4>
                         <table class="table">
                             <thead>
@@ -28,6 +31,7 @@
                                     <th scope="col">Name</th>
                                     <th scope="col">Order</th>
                                     <th scope="col">Price</th>
+                                    <th scope="col">Discounted Price</th>
                                     <th scope="col" ng-if="model.selectedOrder.status === 'active'">Action</th>
                                 </tr>
                             </thead>
@@ -37,39 +41,45 @@
                                     <td>{{orderDetail.name}}</td>
                                     <td>{{orderDetail.desc}}</td>
                                     <td>{{orderDetail.price | currency: "":0}}</td>
+                                    <td>{{orderDetail.discountedPrice | currency: "":0}}</td>
                                     <td ng-if="model.selectedOrder.status === 'active'">
-                                        <i class="fas fa-edit" ng-click="model.editOrderDetail($index, orderDetail)"></i>
+                                        <i class="fas fa-edit"
+                                            ng-click="model.editOrderDetail($index, orderDetail)"></i>
                                         <i class="fas fa-trash-alt" ng-click="model.removeOrderDetail($index)"></i>
                                     </td>
                                 </tr>
                                 <tr ng-if="model.selectedOrder.detail && model.selectedOrder.detail.length > 0">
                                     <td colspan="3" class="text-center">Total</td>
-                                    <td>{{model.calculateOrderPrice() | currency: "":0 }}</td>
+                                    <td>{{model.selectedOrder.totalPrice | currency: "":0 }}</td>
+                                    <td>{{model.selectedOrder.totalDiscountedPrice | currency: "":0 }}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-                <div class="row" ng-if="model.selectedOrder && model.selectedOrder.status === 'active'" style="margin-top: 40px">
+                <div class="row" ng-if="model.selectedOrder && model.selectedOrder.status === 'active'"
+                    style="margin-top: 40px">
                     <div class="col-6">
                         <fieldset class="fieldset-border">
                             <legend>Order Detail:</legend>
                             <form>
                                 <div class="form-group">
                                     <label>Name</label>
-                                    <input type="text" class="form-control" placeholder="your name" ng-model="model.orderDetail.name">
+                                    <input type="text" class="form-control" placeholder="your name"
+                                        ng-model="model.orderDetail.name">
                                 </div>
                                 <div class="form-group">
                                     <label>Order</label>
                                     <input type="text" class="form-control" placeholder="would you like something ?"
-                                           ng-model="model.orderDetail.desc">
+                                        ng-model="model.orderDetail.desc">
                                 </div>
                                 <div class="form-group">
                                     <label>Price</label>
-                                    <input type="text" class="form-control" placeholder="e.g. 54.000" ng-model="model.orderDetail.price">
+                                    <input type="text" class="form-control" placeholder="e.g. 54.000"
+                                        ng-model="model.orderDetail.price">
                                 </div>
                                 <button type="submit" class="btn btn-primary" ng-click="model.submitOrderDetail()"
-                                        ng-disabled="!model.orderDetail.name || !model.orderDetail.desc">
+                                    ng-disabled="!model.orderDetail.name || !model.orderDetail.desc">
                                     Submit
                                 </button>
                             </form>
@@ -78,7 +88,8 @@
                     <div class="col-6" ng-if="model.selectedOrder.detail">
                         <h4>Order Group</h4>
                         <table class="table">
-                            <tr ng-repeat="(key, value) in model.selectedOrder.detail | groupBy: 'desc'" ng-if="model.selectedOrder.detail && model.selectedOrder.detail.length > 0">
+                            <tr ng-repeat="(key, value) in model.selectedOrder.detail | groupBy: 'desc'"
+                                ng-if="model.selectedOrder.detail && model.selectedOrder.detail.length > 0">
                                 <td colspan="3">{{key}}</td>
                                 <td>{{value.length}}</td>
                             </tr>

@@ -11,7 +11,6 @@
 
         model.submitOrderDetail = submitOrderDetail;
         model.removeOrderDetail = removeOrderDetail;
-        model.calculateOrderPrice = calculateOrderPrice;
         model.editOrderDetail = editOrderDetail;
 
         activate();
@@ -21,8 +20,34 @@
                 $timeout(function () {
                     model.selectedOrder = data;
                     model.trustedWebsiteUrl = $sce.trustAsResourceUrl(model.selectedOrder.menuUrl);
+                    calculateDiscount();
+                    calculateTotalPrice();
                 });
             });
+        }
+
+        function calculateDiscount(order) {
+            var order = model.selectedOrder;
+            if (!order.discount || order.discount == 0) return;
+            _.each(order.detail, function (item) {
+                var price = Number.parseFloat(item.price);
+                if (isNaN(price)) item.discountedPrice = price;
+                else item.discountedPrice = (price * (100 - order.discount)) / 100;
+            });
+        }
+
+        function calculateTotalPrice() {
+            var order = model.selectedOrder;
+
+            model.selectedOrder.totalPrice = _.reduce(order.detail, function (sum, item) {
+                if (isNaN(Number.parseFloat(item.price))) return sum += 0;
+                return sum += Number.parseFloat(item.price);
+            }, 0);
+
+            model.selectedOrder.totalDiscountedPrice = _.reduce(order.detail, function (sum, item) {
+                if (isNaN(Number.parseFloat(item.discountedPrice))) return sum += 0;
+                return sum += Number.parseFloat(item.discountedPrice);
+            }, 0);
         }
 
         function submitOrderDetail() {
@@ -57,12 +82,7 @@
             model.editOrderDetailIndex = index;
         }
 
-        function calculateOrderPrice() {
-            return _.reduce(model.selectedOrder.detail, function (sum, item) {
-                if (isNaN(Number.parseFloat(item.price))) return sum += 0;
-                return sum += Number.parseFloat(item.price);
-            }, 0);
-        }
+
 
     }
     module.filter('groupBy', function () {
