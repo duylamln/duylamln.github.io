@@ -50,7 +50,7 @@
   </md-grid-list>
   <div style="margin-top: 50px">
     <div layout="columns" style="margin-top: 0px" ng-repeat="timeEntry in model.selectedTimesheet.timeEntries">
-      <md-input-container flex="10">
+      <md-input-container flex="5">
         <label ng-if="$index === 0">Start</label>
         <md-icon class="name" ng-click="model.setStartTime(timeEntry)">
           <i class="fas fa-clock fa-lg"></i>
@@ -58,7 +58,7 @@
         <input type="text" ui-mask="99:99" ng-model="timeEntry.startTimeDisplay"
           ng-change="model.onStartTimeChange(timeEntry)" />
       </md-input-container>
-      <md-input-container flex="10">
+      <md-input-container flex="5">
         <label ng-if="$index === 0">End</label>
         <md-icon class="name" ng-click="model.setEndTime(timeEntry)">
           <i class="fas fa-clock fa-lg"></i>
@@ -71,10 +71,20 @@
         <label ng-if="$index === 0">Duration</label>
         <input type="text" id="inlineFormInputName2" ng-model="timeEntry.duration" />
       </md-input-container>
-      <md-input-container flex="30">
+      <md-input-container flex="15">
+        <label ng-if="$index === 0">Version</label>
+        <md-select ng-model="timeEntry.versionId" ng-change="model.onVersionChanged()" placeholder="Version">
+          <md-optgroup label="Version">
+            <md-option ng-repeat="item in model.versions" ng-value="item.id">
+              {{ item.title }}</md-option>
+          </md-optgroup>
+        </md-select>
+      </md-input-container>
+      <md-input-container flex="25">
         <label ng-if="$index === 0">Open Project Task</label>
         <md-select ng-model="timeEntry.workPackageId" placeholder="Workpackage">
-          <md-optgroup label="{{ parent.subject }}" ng-repeat="parent in model.parentWorkPackages">
+          <md-optgroup label="{{ parent.subject }}"
+            ng-repeat="parent in model.getParentWorkPackages(timeEntry.versionId)">
             <md-option ng-repeat="item in parent.children" ng-value="item.id">
               {{ item.subject }}</md-option>
           </md-optgroup>

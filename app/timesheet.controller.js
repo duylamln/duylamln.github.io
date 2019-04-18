@@ -25,6 +25,7 @@
     model.onVersionChanged = onVersionChanged;
     model.saveOPTimeEntry = saveOPTimeEntry;
     model.getVersions = getVersions;
+    model.getParentWorkPackages = getParentWorkPackages;
 
     activate();
 
@@ -277,6 +278,11 @@
     function onVersionChanged() {
       if (!model.selectedVersion) return;
       model.parentWorkPackages = model.selectedVersion.workPackages;
+    }
+
+    function getParentWorkPackages(versionId) {
+      if (!versionId) return [];
+      return _.find(model.versions, { id: versionId }).workPackages;
     }
 
     function saveOPTimeEntry(index, timeEntry) {
