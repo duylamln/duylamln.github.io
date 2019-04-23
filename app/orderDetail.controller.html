@@ -17,13 +17,10 @@
                 <div class="row" ng-if="model.selectedOrder">
                     <div class="col">
                         <h4>
-                            {{model.selectedOrder.name}} - <small>Discount:</small>
-                            {{model.selectedOrder.discount || 0}}%
-                            <span class="badge badge-secondary"
-                                ng-if="model.selectedOrder.status === 'locked'">locked</span>
-                            <span class="badge badge-primary"
-                                ng-if="model.selectedOrder.status === 'active'">active</span>
+                            {{model.selectedOrder.name}}
                         </h4>
+
+                        <order-info order="model.selectedOrder"></order-info>
                         <table class="table">
                             <thead>
                                 <tr>

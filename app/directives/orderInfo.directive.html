@@ -1,0 +1,30 @@
+<fieldset class="fieldset-border">
+    <legend><small>Order info</small> </legend>
+    <form>
+        <div class="row">
+            <div class="col-3">
+                <div class="form-group">
+                    <label>Discount (%)</label>
+                    <input type="text" class="form-control" ng-model="order.discount">
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <label>Discount Max (VND)</label>
+                    <input type="text" class="form-control" ng-model="order.discountMax">
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <label>Shipping Fee (VND)</label>
+                    <input type="text" class="form-control" ng-model="order.shippingFee">
+                </div>
+            </div>
+            <div class="col-3">
+
+                <button type="submit" class="btn btn-primary" ng-click="saveOrderInfo()"
+                    style="margin-top: 32px">Save</button>
+            </div>
+        </div>
+    </form>
+</fieldset>
