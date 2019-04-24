@@ -24,6 +24,7 @@
                     calculateDiscount();
                 });
             });
+            //as das d
         }
 
         function calculateDiscount() {
