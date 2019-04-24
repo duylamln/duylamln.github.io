@@ -20,21 +20,78 @@
                 $timeout(function () {
                     model.selectedOrder = data;
                     model.trustedWebsiteUrl = $sce.trustAsResourceUrl(model.selectedOrder.menuUrl);
-                    calculateDiscount();
                     calculateTotalPrice();
+                    calculateDiscount();
                 });
             });
         }
 
-        function calculateDiscount(order) {
+        function calculateDiscount() {
             var order = model.selectedOrder;
             if (!order.discount || order.discount == 0) return;
-            _.each(order.detail, function (item) {
-                var price = Number.parseFloat(item.price);
-                if (isNaN(price)) item.discountedPrice = price;
-                else item.discountedPrice = (price * (100 - order.discount)) / 100;
-            });
+
+            var discountMax = Number.parseFloat(order.discountMax);
+            if (isNaN(discountMax)) {
+                order.discountMax = 0;
+                discountMax = 0; // no limitation
+            }
+
+            var avgShippingFee = RoundNumber(order.shippingFee / order.detail.length);
+
+            var totalDiscountPrice = (order.totalPrice * order.discount) / 100;
+
+            // no limitation or has not reached limitation
+            if (discountMax === 0 || totalDiscountPrice < discountMax) {
+                order.totalDiscountPrice = totalDiscountPrice;
+
+                // item discounted price
+                _.each(order.detail, function (item) {
+                    var price = Number.parseFloat(item.price);
+                    if (isNaN(price)) {
+                        item.price = 0;
+                        item.discountPrice = 0;
+                        item.discountedPrice = 0;
+                        item.finalPrice = 0;
+                    }
+                    else {
+                        item.price = price
+                        item.discountPrice = (price * order.discount) / 100;
+                        item.discountedPrice = price - item.discountPrice;
+                        item.finalPrice = item.discountedPrice + avgShippingFee;
+                    }
+                });
+            }
+            else {
+                order.totalDiscountPrice = discountMax;
+
+
+                // item discounted price
+                _.each(order.detail, function (item) {
+                    var price = Number.parseFloat(item.price);
+                    if (isNaN(price)) {
+                        item.price = 0;
+                        item.discountPrice = 0;
+                        item.discountedPrice = 0;
+                        item.finalPrice = 0;
+                    }
+                    else {
+                        var rate = RoundNumber(price / order.totalPrice);
+                        item.discountPrice = RoundNumber(discountMax * rate);
+                        item.discountedPrice = item.price - item.discountPrice;
+                        item.finalPrice = item.discountedPrice + avgShippingFee;
+                    }
+                });
+            }
+
+            order.totalDiscountedPrice = order.totalPrice - order.totalDiscountPrice;
+            order.totalDiscountedPriceWithShippingFee = order.totalDiscountedPrice + order.shippingFee;
+
+            order.totalFinalPrice = _.reduce(order.detail, function (sum, item) {
+                return sum += Number.parseFloat(item.finalPrice);
+            }, 0);
         }
+
+
 
         function calculateTotalPrice() {
             var order = model.selectedOrder;
@@ -44,10 +101,19 @@
                 return sum += Number.parseFloat(item.price);
             }, 0);
 
-            model.selectedOrder.totalDiscountedPrice = _.reduce(order.detail, function (sum, item) {
-                if (isNaN(Number.parseFloat(item.discountedPrice))) return sum += 0;
-                return sum += Number.parseFloat(item.discountedPrice);
-            }, 0);
+            var shippingFee = Number.parseFloat(order.shippingFee);
+            if (isNaN(shippingFee)) {
+                order.shippingFee = 0;
+                order.totalPriceWithShippingFee = order.totalPrice;
+            }
+            else {
+                order.shippingFee = shippingFee;
+                order.totalPriceWithShippingFee = order.totalPrice + shippingFee;
+            }
+        }
+
+        function RoundNumber(number) {
+            return Math.round(number * 100) / 100;
         }
 
         function submitOrderDetail() {
