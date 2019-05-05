@@ -7,7 +7,8 @@ var myApp = angular.module("myApp", [
     "ngMaterial",
     "ngMessages",
     "cfp.hotkeys",
-    "angular-loading-bar"
+    "angular-loading-bar",
+    "ngAnimate"
 ]);
 
 angular.element(function () {
@@ -133,6 +134,10 @@ myApp.run(["$rootScope", "Alertify", "$state", "$transitions", function ($rootSc
             stateService.go("main.login", { returnState: targetState._identifier });
             return false;
         }
+        return true;
+    });
+
+    $transitions.onEnter({ to: "main.*" }, function (trans) {
         return true;
     });
 
