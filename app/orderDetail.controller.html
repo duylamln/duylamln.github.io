@@ -28,7 +28,9 @@
                                     <th scope="col">Name</th>
                                     <th scope="col">Order</th>
                                     <th scope="col">Price</th>
-                                    <th scope="col">Discounted Price</th>
+                                    <!--<th scope="col">Dst Price</th>-->
+                                    <th scope="col">Dst.ed Price</th>
+                                    <th scope="col">Final Price</th>
                                     <th scope="col" ng-if="model.selectedOrder.status === 'active'">Action</th>
                                 </tr>
                             </thead>
@@ -38,17 +40,27 @@
                                     <td>{{orderDetail.name}}</td>
                                     <td>{{orderDetail.desc}}</td>
                                     <td>{{orderDetail.price | currency: "":0}}</td>
+                                    <!--<td>{{orderDetail.discountPrice | currency: "":0}}</td>-->
                                     <td>{{orderDetail.discountedPrice | currency: "":0}}</td>
+                                    <td>{{orderDetail.finalPrice | currency: "":0}}</td>
                                     <td ng-if="model.selectedOrder.status === 'active'">
                                         <i class="fas fa-edit"
-                                            ng-click="model.editOrderDetail($index, orderDetail)"></i>
+                                           ng-click="model.editOrderDetail($index, orderDetail)"></i>
                                         <i class="fas fa-trash-alt" ng-click="model.removeOrderDetail($index)"></i>
                                     </td>
                                 </tr>
                                 <tr ng-if="model.selectedOrder.detail && model.selectedOrder.detail.length > 0">
                                     <td colspan="3" class="text-center">Total</td>
                                     <td>{{model.selectedOrder.totalPrice | currency: "":0 }}</td>
+                                    <!--<td>{{model.selectedOrder.totalDiscountPrice | currency: "":0 }}</td>-->
                                     <td>{{model.selectedOrder.totalDiscountedPrice | currency: "":0 }}</td>
+                                </tr>
+                                <tr ng-if="model.selectedOrder.detail && model.selectedOrder.detail.length > 0">
+                                    <td colspan="3" class="text-center"><strong>Total (included shipping fee)</strong></td>
+                                    <td><strong>{{model.selectedOrder.totalPriceWithShippingFee | currency: "":0 }}</strong></td>
+                                    <!--<td></td>-->
+                                    <td><strong>{{model.selectedOrder.totalDiscountedPriceWithShippingFee | currency: "":0 }}</strong></td>
+                                    <td><strong>{{model.selectedOrder.totalFinalPrice | currency: "":0 }}</strong></td>
                                 </tr>
                             </tbody>
                         </table>

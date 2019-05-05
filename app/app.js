@@ -37,7 +37,8 @@ myApp.config(["$stateProvider", "$urlRouterProvider", "$mdAriaProvider", functio
         url: "/sprint",
         templateUrl: "app/sprint.controller.html",
         controller: "SprintController",
-        controllerAs: "model"
+        controllerAs: "model",
+        title: "Sprint"
     });
     $stateProvider.state({
         name: "main.timesheet",
