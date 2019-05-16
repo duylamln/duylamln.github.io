@@ -103,8 +103,8 @@
 
                 function compress(e) {
                     return new Promise((resolve, reject) => {
-                        const width = 500;
-                        const height = 300;
+                        const width = 750;
+                        const height = 450;
                         const fileName = e.target.files[0].name;
                         const reader = new FileReader();
                         reader.readAsDataURL(e.target.files[0]);
