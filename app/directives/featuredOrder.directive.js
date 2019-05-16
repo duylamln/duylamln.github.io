@@ -35,6 +35,23 @@
             function createOrder(order, $event) {
                 scope.selectedFeaturedOrder = order;
                 scope.onCreateOrder({ featuredOrder: order });
+                var user = firebase.auth().currentUser;
+
+                var newOrder = {
+                    date: moment(),
+                    status: "active",
+                    detail: [],
+                    menuUrl: order.menuUrl || "",
+                    user: {
+                        key: user.uid,
+                        name: user.displayName
+                    },
+                    name: order.name,
+                    discount: order.discount | 0
+                };
+
+                orderService.createNewOrder(newOrder).then(function () {
+                }); 
 
                 $event.stopPropagation();
                 $event.preventDefault();

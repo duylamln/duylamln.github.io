@@ -29,6 +29,7 @@
 
         function calculateDiscount() {
             var order = model.selectedOrder;
+            order.detail = order.detail || [];
             var discount = Number.parseFloat(order.discount);
             if (isNaN(discount)) {
                 discount = 0;

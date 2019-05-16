@@ -3,7 +3,6 @@
     orderController.$inject = ["$sce", "$scope", "$timeout", "$state", "orderService", "Alertify"];
     function orderController($sce, $scope, $timeout, $state, orderService, Alertify) {
         var model = this;
-        model.createNewOrder = createNewOrder;
         model.selectOrder = selectOrder;
         model.removeOrder = removeOrder;
         model.goToOrderDetail = goToOrderDetail;
@@ -46,26 +45,6 @@
         function getFeaturedOrders() {
             orderService.getFeaturedOrders(function (featuredOrders) {
                 model.featuredOrders = featuredOrders;
-            });
-        }
-
-        function createNewOrder() {
-            if (!model.menuUrl) return;
-            var order = {
-                date: moment(),
-                status: "active",
-                detail: [],
-                menuUrl: model.menuUrl || "",
-                user: {
-                    key: user.uid,
-                    name: user.displayName
-                },
-                name: model.orderName,
-                discount: model.discount | 0
-            };
-            return orderService.createNewOrder(order).then(function () {
-                model.menuUrl = "";
-                model.orderName = "";
             });
         }
 
@@ -143,20 +122,16 @@
         }
         function onSelectedFeaturedOrderChange({ featuredOrder }) {
             var { name, menuUrl } = featuredOrder;
-            model.orderName = name;
-            model.menuUrl = menuUrl;
         }
 
         function onCreateOrderFromFeatured({ featuredOrder }) {
-            var { name, menuUrl } = featuredOrder;
-            model.orderName = name;
-            model.menuUrl = menuUrl;
+            //var { name, menuUrl } = featuredOrder;
 
-            createNewOrder().then(function () {
-                if (featuredOrder.count) featuredOrder.count++;
-                else { featuredOrder.count = 1; }
-                orderService.updateFeaturedOrder(featuredOrder);
-            });
+            //createNewOrder().then(function () {
+            //    if (featuredOrder.count) featuredOrder.count++;
+            //    else { featuredOrder.count = 1; }
+            //    orderService.updateFeaturedOrder(featuredOrder);
+            //});
         }
 
         function humanizeOrderTime(order) {
