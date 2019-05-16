@@ -17,11 +17,12 @@
         function link(scope, element, attr) {
             element.bind("change", function (changeEvent) {
                 var file = changeEvent.target.files[0];
+                setPercentProgressBar(0);
 
                 getBase64(file).then(data => {
                     var formData = new FormData();
+                    scope.$apply(function () { scope.showProgressBar = true });
 
-                    // add assoc key values, this will be posts values
                     formData.append("file", file, file.name);
                     formData.append("action", "upload");
                     formData.append("timestamp", new Date().getTime());
@@ -65,20 +66,23 @@
                 });
 
 
-
+                function setPercentProgressBar(percent) {
+                    var progress_bar_id = "#progressbar";
+                    var bars = $(element).find("#progressbar");
+                    if (bars) {
+                        $(bars[0]).css("width", +percent + "%");
+                    }
+                }
 
 
                 function progressHandling(event) {
                     var percent = 0;
                     var position = event.loaded || event.position;
                     var total = event.total;
-                    var progress_bar_id = "#progress-wrp";
                     if (event.lengthComputable) {
                         percent = Math.ceil(position / total * 100);
                     }
-                    // update progressbars classes so it fits your code
-                    $(progress_bar_id + " .progress-bar").css("width", +percent + "%");
-                    $(progress_bar_id + " .status").text(percent + "%");
+                    setPercentProgressBar(percent);
                 };
 
                 function getBase64(file) {

@@ -168,7 +168,7 @@ myApp.filter("humanize", function () {
     return function (input) {
         if (!input) return input;
 
-        return moment.duration(input.diff(moment())).humanize();
+        return moment.duration(input.diff(moment())).humanize() + " ago";
     }
 });
 window.copyToClipboard = function (str) {
