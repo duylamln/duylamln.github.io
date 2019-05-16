@@ -45,7 +45,7 @@
             function onFileUploadChange(args) {
                 var imgSrc = args.imgSrc;
                 console.log(imgSrc);
-                scope.menuUrl = imgSrc;
+                scope.order.menuUrl = imgSrc;
 
             }
 
