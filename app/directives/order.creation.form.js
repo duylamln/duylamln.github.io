@@ -6,7 +6,7 @@
         var directive = {
             restrict: "E",
             scope: {
-                order: "="
+                inputOrder: "="
             },
             link: link,
             templateUrl: "app/directives/order.creation.form.html"
@@ -15,37 +15,59 @@
         return directive;
 
         function link(scope, element, attr) {
-            scope.createNewOrder = createNewOrder;
-            scope.onFileUploadChange = onFileUploadChange;
             var user = firebase.auth().currentUser;
 
+            scope.order = (scope.inputOrder && angular.copy(scope.inputOrder)) || newOrder();
+            scope.saveOrder = saveOrder;
+            scope.clearOrder = clearOrder;
+            scope.onFileUploadChange = onFileUploadChange;
 
-            function createNewOrder() {
-                if (!scope.menuUrl) return;
-                var order = {
-                    date: moment(),
-                    status: "active",
-                    detail: [],
-                    menuUrl: scope.menuUrl || "",
-                    user: {
-                        key: user.uid,
-                        name: user.displayName
-                    },
-                    name: scope.orderName,
-                    discount: scope.discount | 0
-                };
+            scope.$watch("inputOrder", function (newValue, oldValue) {
+                if (newValue == oldValue) return;
+                scope.order = angular.copy(newValue);
+            });
 
-                return orderService.createNewOrder(order).then(function () {
-                    scope.menuUrl = "";
-                    scope.orderName = "";
-                });
+            function saveOrder() {
+                if (!scope.order.menuUrl) return;
+                var order = angular.copy(scope.order);
+                if (order.key) {
+                    return orderService.updateOrder(order).then(function () {
+                        //scope.order = newOrder();
+                    });
+                }
+                else {
+                    return orderService.createNewOrder(order).then(function () {
+                        scope.order = newOrder();
+                    });
+                }
             }
 
             function onFileUploadChange(args) {
                 var imgSrc = args.imgSrc;
                 console.log(imgSrc);
                 scope.menuUrl = imgSrc;
-                
+
+            }
+
+            function clearOrder() {
+                scope.order = newOrder();
+            }
+
+            function newOrder() {
+                return {
+                    date: moment(),
+                    status: "active",
+                    detail: [],
+                    menuUrl: "",
+                    user: {
+                        key: user.uid,
+                        name: user.displayName
+                    },
+                    name: "",
+                    discount: 0,
+                    discountMax: 0,
+                    shippingFee: 0
+                };
             }
         }
 

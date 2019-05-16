@@ -1,28 +1,44 @@
 <fieldset class="fieldset-border">
-    <legend><small>Create Order</small> </legend>
-    <div class="row">
-        <div class="col-4">
-            <input type="text" class="form-control" placeholder="Toocha" ng-model="orderName">
+    <legend><small>Create/Update Order</small> </legend>
+    <form>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Name</label>
+            <input type="text" class="form-control" placeholder="Toocha" ng-model="order.name">
         </div>
-        <div class="col-5">
+
+        <div class="form-group">
+            <label for="exampleInputEmail1">Menu</label>
             <input type="text" class="form-control" placeholder="https://foody.com/"
-                   ng-model="menuUrl">
+                   ng-model="order.menuUrl">
         </div>
-        <div class="col-1">
-            <input type="text" class="form-control" placeholder="5%" ng-model="discount">
-        </div>
-        <div class="col-2">
-            <button type="submit" class="btn btn-outline-dark" ng-disabled="!menuUrl"
-                    ng-click="createNewOrder()">
-                Create Order
-            </button>
-        </div>
-    </div>
 
-    <div class="form-group">
-        <label for="exampleFormControlFile1">Upload Menu Image</label>
-        <file-upload on-change="onFileUploadChange({ imgSrc: imgSrc })"></file-upload>
-    </div>
+        <div class="form-group">
+            <label for="exampleFormControlFile1">Upload Menu Image</label>
+            <file-upload on-change="onFileUploadChange({ imgSrc: imgSrc })"></file-upload>
+        </div>
 
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="exampleInputEmail1">Discount (%)</label>
+                <input type="text" class="form-control" placeholder="5%" ng-model="order.discount">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="exampleInputEmail1">Discount Max (VND)</label>
+                <input type="text" class="form-control" placeholder="50.000" ng-model="order.discountMax">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="exampleInputEmail1">Shipping Fee (VND)</label>
+                <input type="text" class="form-control" placeholder="20.000" ng-model="order.shippingFee">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" ng-disabled="!order.menuUrl"
+                ng-click="saveOrder()">
+            Submit
+        </button>
+        <button type="submit" class="btn btn-warning"
+                ng-click="clearOrder()">
+            Clear form
+        </button>
+    </form>
 </fieldset>
-    

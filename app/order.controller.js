@@ -33,11 +33,11 @@
                     if (model.selectedOrder) {
                         model.selectedOrder = _.find(model.orders, { key: model.selectedOrder.key });
                     }
-                    else {
-                        if (model.orders && model.orders.length > 0) {
-                            model.selectedOrder = model.orders[0];
-                        }
-                    }
+                    //else {
+                    //    if (model.orders && model.orders.length > 0) {
+                    //        model.selectedOrder = model.orders[0];
+                    //    }
+                    //}
                 })
             });
         }
