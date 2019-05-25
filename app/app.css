@@ -125,7 +125,7 @@ table tr.table-odd-row {
     border-top: none;
 }
 
-.order fieldset.fieldset-border {
+fieldset.fieldset-border {
     border: 1px solid #ced4da;
     border-radius: .25rem;
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
@@ -141,6 +141,12 @@ table tr.table-odd-row {
     color: blue;
     margin-bottom: 4px;
 }
+
+.none-border-top td, .none-border-top th {
+    border-top: none !important;
+}
+
+
 
 /* animate */
 .page.ng-leave 	{ z-index:9999; }

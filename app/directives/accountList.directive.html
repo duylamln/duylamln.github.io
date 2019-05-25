@@ -1,0 +1,25 @@
+<h4>Account List</h4>
+<table class="table none-border-top table-hover">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Balance</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="account in accounts" ng-click="toggleAccount(account)"
+            ng-class="{'table-active': selectedAccount.key === account.key}">
+            <td>{{$index + 1}}</td>
+            <td>{{account.name}}</td>
+            <td>{{account.email}}</td>
+            <td>{{account.balance  | currency: "":0 }}</td>
+            <td>
+                <i class="fas fa-trash-alt" role="button" tabindex="0"
+                    confirm-click="Are you sure to delete this account ?" confirmed-click="removeAccount(account)"></i>
+                <i class="fas fa-list" role="button" tabindex="0" ng-click="viewTransactions(account, $event)"></i>
+            </td>
+    </tbody>
+</table>

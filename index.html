@@ -10,13 +10,14 @@
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="app/app.css">
     <link href="scripts/jquery-roadmap/jquery.roadmap.min.css" rel="stylesheet" />
-    <link href="contents/bootstrap.min.css" rel="stylesheet" />
     <link href="contents/ng-alertify.css" rel="stylesheet" />
     <link href="contents/angular-material.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
-          integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+        integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
     <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.css" />
     <link type="text/css" rel="stylesheet" href="contents/loading-bar.css" media='all' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 
 <body>
@@ -47,7 +48,6 @@
     <script src="scripts/angular.min.js"></script>
     <script src="scripts/angular-ui-router.min.js"></script>
     <script src="scripts/jquery-3.3.1.min.js"></script>
-    <script src="scripts/bootstrap.min.js"></script>
     <script src="scripts/lodash.js"></script>
     <script src="scripts/moment.js"></script>
     <script src="scripts/mask.js"></script>
@@ -60,6 +60,15 @@
     <script src="scripts/hotkey.js"></script>
     <script src="scripts/loading-bar.js"></script>
 
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
 
     <script src="scripts/jquery-roadmap/jquery.roadmap.js"></script>
 
@@ -68,16 +77,27 @@
     <script src="app/services/convertService.js"></script>
     <script src="app/services/openProjectService.js"></script>
     <script src="app/services/orderService.js"></script>
-    <script src="app/sprint.controller.js"></script>
-    <script src="app/timesheet.controller.js"></script>
-    <script src="app/login.controller.js"></script>
-    <script src="app/order.controller.js"></script>
-    <script src="app/orderDetail.controller.js"></script>
+    <script src="app/services/authenService.js"></script>
+    <script src="app/services/accountService.js"></script>
+
+    <script src="app/controllers/sprint.controller.js"></script>
+    <script src="app/controllers/timesheet.controller.js"></script>
+    <script src="app/controllers/login.controller.js"></script>
+    <script src="app/controllers/order.controller.js"></script>
+    <script src="app/controllers/orderDetail.controller.js"></script>
+    <script src="app/controllers/app.controller.js"></script>
+    <script src="app/controllers/account.controller.js"></script>
+    <script src="app/controllers/bank.controller.js"></script>
+
+
     <script src="app/directives/timeline.directive.js"></script>
     <script src="app/directives/featuredOrder.directive.js"></script>
     <script src="app/directives/orderInfo.directive.js"></script>
     <script src="app/directives/order.creation.form.js"></script>
     <script src="app/directives/file.upload.js"></script>
+    <script src="app/directives/confirmClick.directive.js"></script>
+    <script src="app/directives/accountList.directive.js"></script>
+    <script src="app/directives/accountCreation.directive.js"></script>
 
     <script src="app/app.value.js"></script>
 </body>

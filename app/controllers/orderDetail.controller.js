@@ -1,7 +1,7 @@
 (function (module) {
     module.controller("OrderDetailController", orderDetailController);
-    orderDetailController.$inject = ["$sce", "$scope", "$timeout", "$stateParams", "orderService"];
-    function orderDetailController($sce, $scope, $timeout, $stateParams, orderService) {
+    orderDetailController.$inject = ["$sce", "$scope", "$timeout", "$stateParams", "orderService", "authenService", "transactionService"];
+    function orderDetailController($sce, $scope, $timeout, $stateParams, orderService, authenService, transactionService) {
         var model = this;
         var orderKey = $stateParams.key;
         var { displayName } = firebase.auth().currentUser || "";
@@ -12,6 +12,8 @@
         model.submitOrderDetail = submitOrderDetail;
         model.removeOrderDetail = removeOrderDetail;
         model.editOrderDetail = editOrderDetail;
+
+        var currentUser = authenService.getCurrentUser();
 
         activate();
 
@@ -126,6 +128,7 @@
             if (!model.orderDetail.name || !model.orderDetail.desc) return;
 
 
+
             var updateOrder = angular.copy(model.selectedOrder);
 
             if (model.editOrderDetailIndex !== undefined) {
@@ -136,10 +139,25 @@
                 updateOrder.detail.push(model.orderDetail);
             }
 
-            orderService.updateOrder(updateOrder).then(function () {
-                model.orderDetail = undefined;
-                model.editOrderDetailIndex = undefined;
-            });
+            if (currentUser) {
+                var { displayName, email, key } = currentUser;
+                model.orderDetail.user = { displayName, email, key };
+
+
+                transactionService.createOrUpdateTransaction()
+            }
+            else {
+                orderService.updateOrder(updateOrder)
+                    .then(() => {
+                        if (model.orderDetail.user) {
+
+                        }
+                    })
+                    .then(function () {
+                        model.orderDetail = undefined;
+                        model.editOrderDetailIndex = undefined;
+                    });
+            }
         }
 
         function removeOrderDetail(index) {

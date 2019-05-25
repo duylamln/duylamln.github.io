@@ -30,12 +30,14 @@ myApp.config(["$stateProvider", "$urlRouterProvider", "$mdAriaProvider", functio
         name: "main",
         url: "",
         templateUrl: "app/app.html",
+        controller: "AppController",
+        controllerAs: "model",
         abstract: true
     });
     $stateProvider.state({
         name: "main.sprint",
         url: "/sprint",
-        templateUrl: "app/sprint.controller.html",
+        templateUrl: "app/controllers/sprint.controller.html",
         controller: "SprintController",
         controllerAs: "model",
         title: "Sprint"
@@ -43,7 +45,7 @@ myApp.config(["$stateProvider", "$urlRouterProvider", "$mdAriaProvider", functio
     $stateProvider.state({
         name: "main.timesheet",
         url: "/timesheet",
-        templateUrl: "app/timesheet.controller.html",
+        templateUrl: "app/controllers/timesheet.controller.html",
         controller: "TimesheetController",
         controllerAs: "model",
         requiredAuth: true
@@ -51,7 +53,7 @@ myApp.config(["$stateProvider", "$urlRouterProvider", "$mdAriaProvider", functio
     $stateProvider.state({
         name: "main.order",
         url: "/order",
-        templateUrl: "app/order.controller.html",
+        templateUrl: "app/controllers/order.controller.html",
         controller: "OrderController",
         controllerAs: "model",
         requiredAuth: true
@@ -59,94 +61,51 @@ myApp.config(["$stateProvider", "$urlRouterProvider", "$mdAriaProvider", functio
     $stateProvider.state({
         name: "main.orderDetail",
         url: "/order/:key",
-        templateUrl: "app/orderDetail.controller.html",
+        templateUrl: "app/controllers/orderDetail.controller.html",
         controller: "OrderDetailController",
         controllerAs: "model"
     });
     $stateProvider.state({
+        name: "main.account",
+        url: "/account",
+        templateUrl: "app/controllers/account.controller.html",
+        controller: "AccountController",
+        controllerAs: "model",
+        requiredAuth: true
+    });
+    $stateProvider.state({
         name: "main.login",
         url: "/login?returnState=",
-        templateUrl: "app/login.controller.html",
+        templateUrl: "app/controllers/login.controller.html",
         controller: "LoginController",
         controllerAs: "model"
     });
+    $stateProvider.state({
+        name: "main.bank",
+        url: "/bank",
+        templateUrl: "app/controllers/bank.controller.html",
+        controller: "BankController",
+        controllerAs: "model",
+        requiredAuth: true
+    });
 }]);
 
-myApp.run(["$rootScope", "Alertify", "$state", "$transitions", function ($rootScope, Alertify, $state, $transitions) {
+myApp.run(["$rootScope", "Alertify", "$state", "$transitions", "authenService", function ($rootScope, Alertify, $state, $transitions, authenService) {
     $rootScope.alertify = Alertify;
-
-    // firebase.auth().onAuthStateChanged(function (user) {
-    //     $rootScope.user = user;
-
-
-
-    // });
-
-    var ui = new firebaseui.auth.AuthUI(firebase.auth());
-    var uiConfig = {
-        callbacks: {
-            signInSuccessWithAuthResult: function (authResult, redirectUrl) {
-                // User successfully signed in.
-                // Return type determines whether we continue the redirect automatically
-                // or whether we leave that to developer to handle.
-                window.user = authResult;
-                return true;
-            },
-            uiShown: function () {
-                // The widget is rendered.
-                // Hide the loader.
-                document.getElementById('loader').style.display = 'none';
-            }
-        },
-        // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
-        signInFlow: 'popup',
-        signInSuccessUrl: "/sprint",
-        signInOptions: [
-            // Leave the lines as is for the providers you want to offer your users.
-            // firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-            // firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-            // firebase.auth.TwitterAuthProvider.PROVIDER_ID,
-            // firebase.auth.GithubAuthProvider.PROVIDER_ID,
-            firebase.auth.EmailAuthProvider.PROVIDER_ID
-            // firebase.auth.PhoneAuthProvider.PROVIDER_ID
-        ],
-        // Terms of service url.
-        tosUrl: '<your-tos-url>',
-        // Privacy policy url.
-        privacyPolicyUrl: '<your-privacy-policy-url>'
-    };
-
-    $rootScope.showLoginForm = function (returnState) {
-        uiConfig.callbacks.signInSuccessWithAuthResult = function (authResult, redirectUrl) {
-            window.user = authResult.user;
-            $state.go(returnState);
-        }
-
-        // The start method will wait until the DOM is loaded.
-        ui.start('#firebaseui-auth-container', uiConfig);
-    }
+    $rootScope.$state = $state;
+    authenService.initialize();
 
 
     $transitions.onBefore({ to: "main.*" }, function (trans) {
         var stateService = trans.router.stateService;
         var targetState = trans._targetState;
         var targetStateConfig = stateService.get(targetState.identifier());
-        if (!window.user && targetStateConfig.requiredAuth === true) {
+        if (!authenService.user && targetStateConfig.requiredAuth === true) {
             stateService.go("main.login", { returnState: targetState._identifier });
             return false;
         }
         return true;
     });
-
-    $transitions.onEnter({ to: "main.*" }, function (trans) {
-        return true;
-    });
-
-    // $transitions.onError({}, function (trans) {
-    //     var stateService = trans.router.stateService;
-    //     var targetState = trans._targetState;
-    //     stateService.go("main.login", { returnState: targetState._identifier });
-    // });
 }]);
 
 myApp.filter("momentDate", function () {

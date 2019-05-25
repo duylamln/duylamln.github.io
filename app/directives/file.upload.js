@@ -1,7 +1,7 @@
 (function (module) {
     "use strict";
     module.directive("fileUpload", fileUploadDirective);
-    fileUploadDirective.$inject = ["orderService"];
+    fileUploadDirective.$inject = ["orderService", "Alertify"];
     function fileUploadDirective(orderService) {
         var directive = {
             restrict: "E",
