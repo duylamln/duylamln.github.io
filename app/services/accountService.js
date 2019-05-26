@@ -46,7 +46,7 @@
                     }
                     else {
                         Alertify.success("Create/Update account successfully!");
-                        defer.resolve();
+                        defer.resolve(account);
                     }
                 });
             return defer.promise;
@@ -68,9 +68,59 @@
             return defer.promise;
         }
 
+        function getAccountByEmail(email) {
+            var defer = $q.defer();
+            var emails = database.ref("accounts").orderByChild("email").equalTo(email).limitToFirst(1);
+            emails.on("value",
+                function (snapshot) {
+                    if (!snapshot.exists()) {
+                        defer.resolve(undefined);
+                    }
+                    else {
+                        snapshot.forEach(childSnapshot => defer.resolve(childSnapshot.val()));
+                    }
+                },
+                function (error) {
+                    Alertify.error(error);
+                    defer.reject(error);
+                });
+            return defer.promise;
+        }
+
+        function debit(email, amount) {
+            var defer = $q.defer();
+
+            getAccountByEmail(email)
+                .then(account => {
+                    account.balance = parseFloat(account.balance || 0) - parseFloat(amount || 0);
+                    return $q.when(account);
+                })
+                .then(createOrUpdateAccount)
+                .then(defer.resolve, defer.reject);
+
+            return defer.promise;
+        }
+
+        function deposit(email, amount) {
+            var defer = $q.defer();
+
+            getAccountByEmail(email)
+                .then(account => {
+                    account.balance = parseFloat(account.balance || 0) + parseFloat(amount || 0);
+                    return $q.when(account);
+                })
+                .then(createOrUpdateAccount)
+                .then(defer.resolve, defer.reject);
+
+            return defer.promise;
+        }
+
         this.subscribeAccounts = subscribeAccounts;
         this.createOrUpdateAccount = createOrUpdateAccount;
         this.removeAccount = removeAccount;
+        this.getAccountByEmail = getAccountByEmail;
+        this.debit = debit;
+        this.deposit = deposit;
 
         return this;
     }

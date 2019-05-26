@@ -1,13 +1,14 @@
 (function (module) {
     "use strict";
     module.directive("accountList", accountListDirective);
-    accountListDirective.$inject = ["accountService"];
-    function accountListDirective(accountService) {
+    accountListDirective.$inject = ["accountService", "transactionService", "$timeout"];
+    function accountListDirective(accountService, transactionService, $timeout) {
         var directive = {
             restrict: "E",
             scope: {
                 accounts: "=",
-                onSelectedAccountChanged: "&"
+                onSelectedAccountChanged: "&",
+                onViewTransactionList: "&"
             },
             link: link,
             templateUrl: "app/directives/accountList.directive.html"
@@ -35,9 +36,11 @@
                     }
                 });
             }
-            scope.viewTransactions = (acount, $event) => {
+            scope.viewTransactions = (account, $event) => {
+                scope.onViewTransactionList({ account: account });
 
-                $event.stopProbagation();
+
+                $event.stopPropagation();
                 $event.preventDefault();
             }
         }

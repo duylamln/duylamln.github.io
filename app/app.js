@@ -130,6 +130,14 @@ myApp.filter("humanize", function () {
         return moment.duration(input.diff(moment())).humanize() + " ago";
     }
 });
+
+myApp.filter('groupBy', function () {
+    return _.memoize(function (items, field) {
+        return _.groupBy(items, field);
+    }
+    );
+});
+
 window.copyToClipboard = function (str) {
     const el = document.createElement('textarea');  // Create a <textarea> element
     el.value = str;                                 // Set its value to the string that you want copied
@@ -149,3 +157,15 @@ window.copyToClipboard = function (str) {
         document.getSelection().addRange(selected);   // Restore the original selection
     }
 };
+
+window.createRandomId = function () {
+    var base64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    var result = "";
+    var random = Math.random() * 1073741824; //5 symbols in base64, almost maxint
+    while (random > 0) {
+        var char1 = base64chars[Math.round((Math.random() * 1073741824) % 64)];
+        result += char1;
+        random = Math.floor(random / 64);
+    }
+    return result;
+}

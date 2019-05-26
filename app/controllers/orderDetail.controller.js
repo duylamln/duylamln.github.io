@@ -1,7 +1,7 @@
 (function (module) {
     module.controller("OrderDetailController", orderDetailController);
-    orderDetailController.$inject = ["$sce", "$scope", "$timeout", "$stateParams", "orderService", "authenService", "transactionService"];
-    function orderDetailController($sce, $scope, $timeout, $stateParams, orderService, authenService, transactionService) {
+    orderDetailController.$inject = ["$sce", "$scope", "$timeout", "$stateParams", "$q", "orderService", "authenService", "transactionService"];
+    function orderDetailController($sce, $scope, $timeout, $stateParams, $q, orderService, authenService, transactionService) {
         var model = this;
         var orderKey = $stateParams.key;
         var { displayName } = firebase.auth().currentUser || "";
@@ -22,117 +22,18 @@
                 $timeout(function () {
                     model.selectedOrder = data;
                     model.trustedWebsiteUrl = $sce.trustAsResourceUrl(model.selectedOrder.menuUrl);
-                    calculateTotalPrice();
-                    calculateDiscount();
                 });
             });
-            //as das d
-        }
-
-        function calculateDiscount() {
-            var order = model.selectedOrder;
-            order.detail = order.detail || [];
-            var discount = Number.parseFloat(order.discount);
-            if (isNaN(discount)) {
-                discount = 0;
-                order.discount = 0;
-            }
-
-            var discountMax = Number.parseFloat(order.discountMax);
-            if (isNaN(discountMax)) {
-                order.discountMax = 0;
-                discountMax = 0; // no limitation
-            }
-
-            var avgShippingFee = RoundNumber(order.shippingFee / order.detail.length);
-
-            var totalDiscountPrice = (order.totalPrice * order.discount) / 100;
-
-            // no limitation or has not reached limitation
-            if (discountMax === 0 || totalDiscountPrice < discountMax) {
-                order.totalDiscountPrice = totalDiscountPrice;
-
-                // item discounted price
-                _.each(order.detail, function (item) {
-                    var price = Number.parseFloat(item.price);
-                    if (isNaN(price)) {
-                        item.price = 0;
-                        item.discountPrice = 0;
-                        item.discountedPrice = 0;
-                        item.finalPrice = 0;
-                    }
-                    else {
-                        item.price = price
-                        item.discountPrice = (price * order.discount) / 100;
-                        item.discountedPrice = price - item.discountPrice;
-                        item.finalPrice = item.discountedPrice + avgShippingFee;
-                    }
-                });
-            }
-            else {
-                order.totalDiscountPrice = discountMax;
-
-
-                // item discounted price
-                _.each(order.detail, function (item) {
-                    var price = Number.parseFloat(item.price);
-                    if (isNaN(price)) {
-                        item.price = 0;
-                        item.discountPrice = 0;
-                        item.discountedPrice = 0;
-                        item.finalPrice = 0;
-                    }
-                    else {
-                        var rate = RoundNumber(price / order.totalPrice);
-                        item.discountPrice = RoundNumber(discountMax * rate);
-                        item.discountedPrice = item.price - item.discountPrice;
-                        item.finalPrice = item.discountedPrice + avgShippingFee;
-                    }
-                });
-            }
-
-            order.totalDiscountedPrice = order.totalPrice - order.totalDiscountPrice;
-            order.totalDiscountedPriceWithShippingFee = order.totalDiscountedPrice + order.shippingFee;
-
-            order.totalFinalPrice = _.reduce(order.detail, function (sum, item) {
-                return sum += Number.parseFloat(item.finalPrice);
-            }, 0);
-        }
-
-
-
-        function calculateTotalPrice() {
-            var order = model.selectedOrder;
-
-            model.selectedOrder.totalPrice = _.reduce(order.detail, function (sum, item) {
-                if (isNaN(Number.parseFloat(item.price))) return sum += 0;
-                return sum += Number.parseFloat(item.price);
-            }, 0);
-
-            var shippingFee = Number.parseFloat(order.shippingFee);
-            if (isNaN(shippingFee)) {
-                order.shippingFee = 0;
-                order.totalPriceWithShippingFee = order.totalPrice;
-            }
-            else {
-                order.shippingFee = shippingFee;
-                order.totalPriceWithShippingFee = order.totalPrice + shippingFee;
-            }
-        }
-
-        function RoundNumber(number) {
-            return Math.round(number * 100) / 100;
         }
 
         function submitOrderDetail() {
             if (!model.orderDetail.name || !model.orderDetail.desc) return;
-
-
+            model.orderDetail.tranId = model.orderDetail.tranId || window.createRandomId();
 
             var updateOrder = angular.copy(model.selectedOrder);
 
             if (model.editOrderDetailIndex !== undefined) {
-                updateOrder.detail.splice(model.editOrderDetailIndex, 1, model.orderDetail);
+                updateOrder.detail[model.editOrderDetailIndex] = model.orderDetail;
             }
             else {
                 if (!updateOrder.detail) updateOrder.detail = [];
@@ -140,45 +41,35 @@
             }
 
             if (currentUser) {
-                var { displayName, email, key } = currentUser;
-                model.orderDetail.user = { displayName, email, key };
-
-
-                transactionService.createOrUpdateTransaction()
+                var { displayName, email, uid } = currentUser;
+                model.orderDetail.createdUser = { displayName, email, uid };
             }
-            else {
-                orderService.updateOrder(updateOrder)
-                    .then(() => {
-                        if (model.orderDetail.user) {
 
-                        }
-                    })
-                    .then(function () {
-                        model.orderDetail = undefined;
-                        model.editOrderDetailIndex = undefined;
-                    });
-            }
+            orderService.updateOrder(updateOrder)
+                .then((order) => {
+                    var orderDetail = !!model.editOrderDetailIndex ? order.detail[model.editOrderDetailIndex] : order.detail[order.detail.length - 1];
+                    return transactionService.pushTransaction(order, orderDetail);
+                })
+                .then(function () {
+                    model.orderDetail = undefined;
+                    model.editOrderDetailIndex = undefined;
+                });
         }
 
         function removeOrderDetail(index) {
-            model.selectedOrder.detail.splice(index, 1);
+            var orderDetail = model.selectedOrder.detail.splice(index, 1)[0];
 
             var updateOrder = angular.copy(model.selectedOrder);
-            orderService.updateOrder(updateOrder);
+            orderService.updateOrder(updateOrder)
+                .then((order) => {
+                    transactionService.removeTransactionById(orderDetail.tranId);
+                });
         }
 
         function editOrderDetail(index, orderDetail) {
             model.orderDetail = angular.copy(orderDetail);
             model.editOrderDetailIndex = index;
         }
-
-
-
     }
-    module.filter('groupBy', function () {
-        return _.memoize(function (items, field) {
-            return _.groupBy(items, field);
-        }
-        );
-    });
+
 })(angular.module("myApp"));

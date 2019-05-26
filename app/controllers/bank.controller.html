@@ -4,6 +4,11 @@
     </div>
     <div class="col-lg-4 col-xs-12">
         <account-list accounts="model.accounts"
-            on-selected-account-changed="model.onSelectedAccountChanged({account: account})"></account-list>
+            on-selected-account-changed="model.onSelectedAccountChanged({account: account})"
+            on-view-transaction-list="model.onViewTransactionList({account: account})"></account-list>
+    </div>
+    <div class="col-lg-5 col-xs-12">
+        <transaction-list transactions="model.transactions">
+            </account-list>
     </div>
 </div>
