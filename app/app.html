@@ -1,7 +1,8 @@
 <nav class="nav">
   <a class="nav-link" ui-sref-active="active" ui-sref="main.sprint">Sprint</a>
   <a class="nav-link" ui-sref-active="active" ui-sref="main.timesheet">Timesheet</a>
-  <a class="nav-link" ui-sref-active="active" ui-sref="main.bank">Bank</a>
+  <a class="nav-link" ui-sref-active="active" ui-sref="main.bank"
+    ng-if="model.user.email == 'duylamln@gmail.com'">Bank</a>
   <a class="nav-link" ui-sref-active="active" ui-sref="main.order">Order</a>
   <a class="nav-link" ui-sref-active="active" ui-sref="main.login({returnState: $root.$state.current.name})"
     ng-if="!model.user">
