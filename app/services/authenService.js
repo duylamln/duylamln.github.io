@@ -22,7 +22,7 @@
                         // or whether we leave that to developer to handle.
                         self.user = authResult.user;
                         runUserStateChangeCallbacks(self.user);
-                        $state.go(self.returnState);
+                        $state.go(self.returnState, self.returnParams);
                     },
                     uiShown: function () {
                         // The widget is rendered.
@@ -49,9 +49,10 @@
             };
         }
 
-        function logIn(returnState) {
+        function logIn(returnState, params) {
             // The start method will wait until the DOM is loaded.
             self.returnState = returnState;
+            if (params) self.returnParams = JSON.parse(params);
             self.ui.start('#firebaseui-auth-container', self.uiConfig);
         }
 

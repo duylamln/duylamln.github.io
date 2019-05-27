@@ -75,7 +75,7 @@ myApp.config(["$stateProvider", "$urlRouterProvider", "$mdAriaProvider", functio
     });
     $stateProvider.state({
         name: "main.login",
-        url: "/login?returnState=",
+        url: "/login?returnState=&returnParams=",
         templateUrl: "app/controllers/login.controller.html",
         controller: "LoginController",
         controllerAs: "model"

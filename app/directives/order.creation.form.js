@@ -1,8 +1,8 @@
 (function (module) {
     "use strict";
     module.directive("orderCreationForm", orderCreationFormDirective);
-    orderCreationFormDirective.$inject = ["orderService"];
-    function orderCreationFormDirective(orderService) {
+    orderCreationFormDirective.$inject = ["orderService", "authenService"];
+    function orderCreationFormDirective(orderService, authenService) {
         var directive = {
             restrict: "E",
             scope: {
@@ -21,6 +21,7 @@
             scope.saveOrder = saveOrder;
             scope.clearOrder = clearOrder;
             scope.onFileUploadChange = onFileUploadChange;
+            scope.user = authenService.getCurrentUser();
 
             scope.$watch("inputOrder", function (newValue, oldValue) {
                 if (newValue == oldValue) return;

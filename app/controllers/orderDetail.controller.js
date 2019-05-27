@@ -1,7 +1,7 @@
 (function (module) {
     module.controller("OrderDetailController", orderDetailController);
-    orderDetailController.$inject = ["$sce", "$scope", "$timeout", "$stateParams", "$q", "orderService", "authenService", "transactionService"];
-    function orderDetailController($sce, $scope, $timeout, $stateParams, $q, orderService, authenService, transactionService) {
+    orderDetailController.$inject = ["$sce", "$scope", "$timeout", "$state", "$stateParams", "$q", "orderService", "authenService", "transactionService"];
+    function orderDetailController($sce, $scope, $timeout, $state, $stateParams, $q, orderService, authenService, transactionService) {
         var model = this;
         var orderKey = $stateParams.key;
         var { displayName } = firebase.auth().currentUser || "";
@@ -19,10 +19,15 @@
 
         function activate() {
             orderService.subscribeOrder(orderKey, function (data) {
-                $timeout(function () {
-                    model.selectedOrder = data;
-                    model.trustedWebsiteUrl = $sce.trustAsResourceUrl(model.selectedOrder.menuUrl);
-                });
+                if (data.withdrawFromAccountBalance && !currentUser) {
+                    $state.go("main.login", { returnState: $state.current.name, returnParams: JSON.stringify({ key: $stateParams.key }) });
+                }
+                else {
+                    $timeout(function () {
+                        model.selectedOrder = data;
+                        model.trustedWebsiteUrl = $sce.trustAsResourceUrl(model.selectedOrder.menuUrl);
+                    });
+                }
             });
         }
 
