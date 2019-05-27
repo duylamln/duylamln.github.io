@@ -196,7 +196,6 @@
         }
 
         this.pushTransaction = (order, orderDetail) => {
-            if (!order.withdrawFromAccountBalance) return $q.when();
             var transaction = {
                 id: orderDetail.tranId,
                 desc: orderDetail.desc,

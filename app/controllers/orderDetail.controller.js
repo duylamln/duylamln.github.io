@@ -1,7 +1,7 @@
 (function (module) {
     module.controller("OrderDetailController", orderDetailController);
-    orderDetailController.$inject = ["$sce", "$scope", "$timeout", "$state", "$stateParams", "$q", "orderService", "authenService", "transactionService"];
-    function orderDetailController($sce, $scope, $timeout, $state, $stateParams, $q, orderService, authenService, transactionService) {
+    orderDetailController.$inject = ["$sce", "$timeout", "$state", "$stateParams", "orderService", "authenService"];
+    function orderDetailController($sce, $timeout, $state, $stateParams, orderService, authenService) {
         var model = this;
         var orderKey = $stateParams.key;
         var { displayName } = firebase.auth().currentUser || "";
@@ -19,6 +19,7 @@
 
         function activate() {
             orderService.subscribeOrder(orderKey, function (data) {
+                if (!data) return;
                 if (data.withdrawFromAccountBalance && !currentUser) {
                     $state.go("main.login", { returnState: $state.current.name, returnParams: JSON.stringify({ key: $stateParams.key }) });
                 }
@@ -33,7 +34,7 @@
 
         function submitOrderDetail() {
             if (!model.orderDetail.name || !model.orderDetail.desc) return;
-            model.orderDetail.tranId = model.orderDetail.tranId || window.createRandomId();
+            model.orderDetail.tranId = model.orderDetail.tranId || window.generateId();
 
             var updateOrder = angular.copy(model.selectedOrder);
 
@@ -51,10 +52,6 @@
             }
 
             orderService.updateOrder(updateOrder)
-                .then((order) => {
-                    var orderDetail = !!model.editOrderDetailIndex ? order.detail[model.editOrderDetailIndex] : order.detail[order.detail.length - 1];
-                    return transactionService.pushTransaction(order, orderDetail);
-                })
                 .then(function () {
                     model.orderDetail = undefined;
                     model.editOrderDetailIndex = undefined;
@@ -62,13 +59,10 @@
         }
 
         function removeOrderDetail(index) {
-            var orderDetail = model.selectedOrder.detail.splice(index, 1)[0];
+            model.selectedOrder.detail.splice(index, 1)[0];
 
             var updateOrder = angular.copy(model.selectedOrder);
-            orderService.updateOrder(updateOrder)
-                .then((order) => {
-                    transactionService.removeTransactionById(orderDetail.tranId);
-                });
+            orderService.updateOrder(updateOrder);
         }
 
         function editOrderDetail(index, orderDetail) {

@@ -1,5 +1,5 @@
 ﻿<div class="row" style="margin-top: 50px;">
-    <div class="col-4 offset-1">
+    <div class="col-3">
         <h2>My account</h2>
         <form>
             <div class="form-group">
@@ -12,10 +12,10 @@
                 <input type="email" class="form-control" ng-model="model.user.email" placeholder="Lam Lê" readonly>
 
             </div>
-            <!-- <div class="form-group">
-                <label>Phone Number</label>
-                <input type="text" class="form-control" placeholder="0901123456" ng-model="model.user.phoneNumber">
-            </div> -->
+             <div class="form-group">
+                <label>Balance</label>
+                <input type="text" class="form-control" ng-model="model.balance" readonly>
+            </div> 
 
             <button type="submit" class="btn btn-primary" ng-click="model.saveUserProfile()">Submit</button>
         </form>

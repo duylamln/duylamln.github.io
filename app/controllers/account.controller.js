@@ -1,8 +1,8 @@
 ﻿(function (module) {
 
     module.controller("AccountController", accountController);
-    accountController.$inject = ["authenService"];
-    function accountController(authenService) {
+    accountController.$inject = ["authenService", "accountService", "$q"];
+    function accountController(authenService, accountService, $q) {
         var model = this;
         model.saveUserProfile = saveUserProfile;
 
@@ -14,9 +14,14 @@
                 photoURL: photoURL,
                 phoneNumber: phoneNumber
             };
+            return $q.when(model.user);
         };
 
-        setUser(authenService.getCurrentUser());
+        setUser(authenService.getCurrentUser())
+            .then((user) => {
+                return accountService.getAccountByEmail(user.email)
+            })
+            .then(account => model.balance = account.balance);
 
 
         function saveUserProfile() {

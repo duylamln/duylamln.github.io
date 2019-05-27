@@ -1,44 +1,46 @@
-<fieldset class="fieldset-border">
+<fieldset class="fieldset-border" ng-disabled="order.status === 'locked'">
     <legend><small>Order info</small> </legend>
     <form>
-        <div class="row">
-            <div class="col-3">
-                <div class="form-group">
-                    <label>Discount (%)</label>
-                    <input type="text" class="form-control" ng-model="order.discount">
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="form-group">
-                    <label>Discount Max (VND)</label>
-                    <input type="text" class="form-control" ng-model="order.discountMax">
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="form-group">
-                    <label>Shipping Fee (VND)</label>
-                    <input type="text" class="form-control" ng-model="order.shippingFee">
-                </div>
-            </div>
-            <div class="col-3">
 
-                <button type="submit" class="btn btn-primary" ng-click="saveOrderInfo()"
-                    style="margin-top: 32px">Save</button>
+        <div class="form-row">
+            <div class="form-group col-lg-4 col-xs-6">
+                <label>Discount (%)</label>
+                <input type="text" class="form-control" ng-model="order.discount">
+            </div>
+            <div class="form-group col-lg-4 col-xs-6">
+                <label>Discount Max (VND)</label>
+                <input type="text" class="form-control" ng-model="order.discountMax">
+            </div>
+            <div class="form-group col-lg-4 col-xs-6">
+                <label>Shipping Fee (VND)</label>
+                <input type="text" class="form-control" ng-model="order.shippingFee">
             </div>
         </div>
-        <div class="row" ng-if="user.email === 'duylamln@gmail.com'">
-            <div class="col-6">
-                <div class="form-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1"
-                            ng-model="order.withdrawFromAccountBalance">
-                        <label class="form-check-label" for="defaultCheck1">
-                            Withdraw from account balance
-                        </label>
-                    </div>
-                </div>
-            </div>
 
+        <div class="form-group" ng-if="user.email === 'duylamln@gmail.com'">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="defaultCheck1"
+                       ng-model="order.withdrawFromAccountBalance">
+                <label class="form-check-label" for="defaultCheck1">
+                    Withdraw from account balance
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary" ng-click="saveOrderInfo()">
+                Save
+            </button>
         </div>
     </form>
 </fieldset>
+<div class="form-group"  ng-if="user.email === 'duylamln@gmail.com'">
+    <button type="submit" class="btn btn-danger" ng-click="finishOrder()"
+            ng-if="order.status === 'active'">
+        Finish Order
+    </button>
+    <button type="submit" class="btn btn-danger" ng-click="unlockOrder()"
+            ng-if="order.status === 'locked'">
+        Unlock Order
+    </button>
+</div>
