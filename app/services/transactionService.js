@@ -82,37 +82,52 @@
             var defer = $q.defer();
             var isUpdate = false;
             self.getTransactionById(transaction.id)
-                .then((tran) => {
-                    isUpdate = !!tran;
-                    if (isUpdate) {
-                        console.log("update transaction");
-                        transaction.key = tran.key;
-                        var defer = $q.defer();
-                        accountService.deposit(tran.payer.email, tran.amount)
-                            .then((account) => {
-                                transaction.balance = account.balance;
-                                defer.resolve(transaction);
-                            }, defer.reject);
-
-                        return defer.promise;
-                    }
-                    else {
-                        console.log("create new transaction");
-                        return $q.when(transaction);
-                    }
-                })
-                .then(tran => {
-                    var defer = $q.defer();
-                    accountService.debit(tran.payer.email, tran.amount)
-                        .then((account) => {
-                            tran.balance = account.balance;
-                            defer.resolve(tran);
-                        }, defer.reject);
-                    return defer.promise;
-                })
+                .then(tran => depositAccountBalance(tran, transaction))
+                .then(debitAccountBalance)
                 .then(self.createOrUpdateTransaction)
                 .then(() => defer.resolve(transaction), (error) => defer.reject(error));
 
+            return defer.promise;
+        }
+
+        function depositAccountBalance(tran, transaction) {
+            var isUpdate = !!tran;
+            if (isUpdate) {
+                console.log("update transaction");
+                transaction.key = tran.key;
+                var defer = $q.defer();
+
+                if (tran.payer) {
+                    accountService.deposit(tran.payer.email, tran.amount)
+                        .then((account) => {
+                            transaction.balance = account.balance;
+                            defer.resolve(transaction);
+                        }, defer.reject);
+                }
+                else {
+                    defer.resolve(transaction);
+                }
+
+                return defer.promise;
+            }
+            else {
+                console.log("create new transaction");
+                return $q.when(transaction);
+            }
+        }
+
+        function debitAccountBalance(tran) {
+            var defer = $q.defer();
+            if (tran && tran.payer) {
+                accountService.debit(tran.payer.email, tran.amount)
+                    .then((account) => {
+                        tran.balance = account.balance;
+                        defer.resolve(tran);
+                    }, defer.reject);
+            }
+            else {
+                defer.resolve();
+            }
             return defer.promise;
         }
 
@@ -141,7 +156,12 @@
             self.getTransactionById(tranId)
                 .then(self.removeTransaction)
                 .then((tran) => {
-                    return accountService.deposit(tran.payer.email, tran.amount);
+                    if (tran && tran.payer) {
+                        return accountService.deposit(tran.payer.email, tran.amount);
+                    }
+                    else {
+                        return $q.when(undefined);
+                    }
                 })
                 .then(() => defer.resolve(), error => defer.reject(error));
 
