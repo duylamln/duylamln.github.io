@@ -48,7 +48,7 @@
 
             if (currentUser) {
                 var { displayName, email, uid } = currentUser;
-                model.orderDetail.createdUser = { displayName, email, uid };
+                model.orderDetail.createdUser = model.orderDetail.createdUser || { displayName, email, uid };
             }
 
             orderService.updateOrder(updateOrder)
