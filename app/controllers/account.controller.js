@@ -1,8 +1,8 @@
 ﻿(function (module) {
 
     module.controller("AccountController", accountController);
-    accountController.$inject = ["authenService", "accountService", "$q"];
-    function accountController(authenService, accountService, $q) {
+    accountController.$inject = ["authenService", "accountService", "$q", "transactionService", "$timeout"];
+    function accountController(authenService, accountService, $q, transactionService, $timeout) {
         var model = this;
         model.saveUserProfile = saveUserProfile;
 
@@ -17,11 +17,23 @@
             return $q.when(model.user);
         };
 
-        setUser(authenService.getCurrentUser())
-            .then((user) => {
-                return accountService.getAccountByEmail(user.email)
-            })
-            .then(account => model.balance = account.balance);
+        activate();
+
+        function activate() {
+            var currentUser = authenService.getCurrentUser();
+            setUser(currentUser)
+                .then((user) => {
+                    return accountService.getAccountByEmail(user.email)
+                })
+                .then(account => model.balance = account.balance);
+
+            transactionService.getTransactionByEmail(currentUser.email, (trans) => {
+                $timeout(() => {
+                    model.transactions = trans;
+                }, 0);
+            }); 
+
+        }
 
 
         function saveUserProfile() {

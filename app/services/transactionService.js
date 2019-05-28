@@ -168,13 +168,12 @@
             return defer.promise;
         }
 
-        this.getTransactionByEmail = (email) => {
-            var defer = $q.defer();
-            var transactions = database.ref("transactions").orderByChild("payer/email").equalTo(email).limitToFirst(10);
+        this.getTransactionByEmail = (email, callback) => {
+            var transactions = database.ref("transactions").orderByChild("payer/email").equalTo(email).limitToLast(100);
             transactions.on("value",
                 function (snapshot) {
                     if (!snapshot.exists()) {
-                        defer.resolve([]);
+                        callback([]);
                     }
                     else {
                         var data = [];
@@ -185,20 +184,19 @@
                             convertService.convertStringToMoment(transaction);
                             data.push(transaction);
                         })
-                        defer.resolve(data);
+                        data = _.orderBy(data, "createdDate", "desc");
+                        callback(data);
                     }
                 },
                 function (error) {
                     Alertify.error(error);
-                    defer.reject(error);
                 });
-            return defer.promise;
         }
 
         this.pushTransaction = (order, orderDetail) => {
             var transaction = {
                 id: orderDetail.tranId,
-                desc: orderDetail.desc,
+                desc: orderDetail.name + " - " + orderDetail.desc,
                 amount: orderDetail.finalPrice,
                 payer: orderDetail.createdUser,
                 createdDate: moment(),

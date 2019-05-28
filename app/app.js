@@ -8,7 +8,8 @@ var myApp = angular.module("myApp", [
     "ngMessages",
     "cfp.hotkeys",
     "angular-loading-bar",
-    "ngAnimate"
+    "ngAnimate", 
+    "ui.bootstrap"
 ]);
 
 angular.element(function () {
