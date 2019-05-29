@@ -18,8 +18,8 @@
             <td>{{account.balance  | currency: "":0 }}</td>
             <td>
                 <i class="fas fa-trash-alt" role="button" tabindex="0"
-                    confirm-click="Are you sure to delete this account ?" confirmed-click="removeAccount(account)"></i>
-                <i class="fas fa-list" role="button" tabindex="0" ng-click="viewTransactions(account, $event)"></i>
+                   confirm-click="Are you sure to delete this account ?" confirmed-click="removeAccount(account)"></i>
+                <i class="fas fa-money-check-alt" role="button" tabindex="0" ng-click="viewTransactions(account, $event)"></i>
             </td>
     </tbody>
 </table>

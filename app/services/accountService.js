@@ -68,6 +68,22 @@
             return defer.promise;
         }
 
+        function subscribeAccountByEmail(email, callback) {
+            var emails = database.ref("accounts").orderByChild("email").equalTo(email).limitToFirst(1);
+            emails.on("value",
+                function (snapshot) {
+                    if (!snapshot.exists()) {
+                        callback(undefined);
+                    }
+                    else {
+                        snapshot.forEach(childSnapshot => callback(childSnapshot.val()));
+                    }
+                },
+                function (error) {
+                    Alertify.error(error);                    
+                });
+        }
+
         function getAccountByEmail(email) {
             var defer = $q.defer();
             var emails = database.ref("accounts").orderByChild("email").equalTo(email).limitToFirst(1);
@@ -121,6 +137,7 @@
         this.getAccountByEmail = getAccountByEmail;
         this.debit = debit;
         this.deposit = deposit;
+        this.subscribeAccountByEmail = subscribeAccountByEmail;
 
         return this;
     }

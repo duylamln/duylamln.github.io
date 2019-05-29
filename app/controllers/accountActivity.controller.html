@@ -2,9 +2,32 @@
     <h4 class="modal-title" id="modal-title">Account activity</h4>
 </div>
 <div class="modal-body" id="modal-body">
-    
+    <form>
+        <div class="form-group">
+            
+        </div>
+        <div class="form-group">
+            <label for="formGroupExampleInput">Method: </label><br />
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="transactionMethod" id="inlineRadio1" value="DEPOSIT" ng-model="model.tran.method">
+                <label class="form-check-label" for="inlineRadio1">DEPOSIT</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="transactionMethod" id="inlineRadio2" value="WITHDRAW" ng-model="model.tran.method">
+                <label class="form-check-label" for="inlineRadio2">WITHDRAW</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="formGroupExampleInput2">Amount:</label>
+            <input type="text" class="form-control" ng-model="model.tran.amount" />
+        </div>
+        <div class="form-group">
+            <label for="formGroupExampleInput2">Description:</label>
+            <textarea class="form-control" id="formGroupExampleInput2" ng-model="model.tran.description"></textarea>
+        </div>
+    </form>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-primary" type="button" ng-click="model.ok()">OK</button>
+    <button class="btn btn-primary" type="button" ng-click="model.ok()" ng-disabled="model.disableTran()">OK</button>
     <button class="btn btn-warning" type="button" ng-click="model.cancel()">Cancel</button>
 </div>

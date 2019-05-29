@@ -196,7 +196,7 @@
         this.pushTransaction = (order, orderDetail) => {
             var transaction = {
                 id: orderDetail.tranId,
-                desc: orderDetail.name + " - " + orderDetail.desc,
+                desc: order.name + " - " + orderDetail.name + " - " + orderDetail.desc,
                 amount: orderDetail.finalPrice,
                 payer: orderDetail.createdUser,
                 createdDate: moment(),
@@ -210,6 +210,23 @@
 
             return self.createOrUpdateTransactionById(transaction);
         }
+
+        this.depositMoney = (transaction) => {
+            return accountService.deposit(transaction.payer.email, transaction.amount)
+                .then(acc => {
+                    transaction.balance = acc.balance;
+                    return self.createOrUpdateTransaction(transaction)
+                });
+        }
+
+        this.debitMoney = (transaction) => {
+            return accountService.debit(transaction.payer.email, transaction.amount)
+                .then(acc => {
+                    transaction.balance = acc.balance;
+                    return self.createOrUpdateTransaction(transaction)
+                });
+        }
+
         return this;
     }
 

@@ -12,7 +12,7 @@
 
         model.onSelectedAccountChanged = (args) => {
             model.selectedAccount = args.account;
-            viewTransactionByEmail(args.account.email);
+            if(args.account) viewTransactionByEmail(args.account.email);
         }
 
         function viewTransactionByEmail(email) {
@@ -30,12 +30,15 @@
                 controller: "AccountActivityController",
                 controllerAs: "model",
                 size: "md",
+                backdrop: "static",
                 resolve: {
-                    data: function () {
+                    account: function () {
                         return args.account;
                     }
                 }
             });
+
+            modalInstance.result.then(() => { });
         }
     }
 })(angular.module("myApp"));

@@ -14,8 +14,8 @@
         <tr ng-repeat="tran in transactions" ng-click="toggleAccount(account)">
             <td>{{$index + 1}}</td>
             <td>{{tran.createdDate | momentDate:'DD.MM.YYYY'}}</td>
-            <td>{{tran.order.name + ' - ' + tran.desc}}</td>
-            <td>{{tran.method === 'DEBIT' ? '-' : '+'}}{{tran.amount | currency: "":0 }}</td>
+            <td>{{tran.desc}}</td>
+            <td>{{tran.method === 'DEPOSIT' ? '+' : '-'}}{{tran.amount | currency: "":0 }}</td>
             <td>{{tran.balance  | currency: "":0 }}</td>
             <td>
                 <!-- <i class="fas fa-trash-alt" role="button" tabindex="0"
