@@ -81,8 +81,10 @@
         this.createOrUpdateTransactionById = (transaction) => {
             var defer = $q.defer();
             var isUpdate = false;
-            self.getTransactionById(transaction.id)
-                .then(tran => depositAccountBalance(tran, transaction))
+            accountService.getAccountByEmail(transaction.payer.email)
+                .then((acc) => createAccountIfNotExisting(acc, transaction.payer))
+                .then((acc) => self.getTransactionById(transaction.id))
+                .then(existingTran => depositAccountBalance(existingTran, transaction))
                 .then(debitAccountBalance)
                 .then(self.createOrUpdateTransaction)
                 .then(() => defer.resolve(transaction), (error) => defer.reject(error));
@@ -90,15 +92,28 @@
             return defer.promise;
         }
 
-        function depositAccountBalance(tran, transaction) {
-            var isUpdate = !!tran;
-            if (isUpdate) {
+        function createAccountIfNotExisting(acc, user) {
+            if (acc) return $.when(acc);
+            else {
+                var { displayName, email } = user;
+                console.log("create new account for email: ", email);
+                return accountService.createOrUpdateAccount({
+                    name: displayName || "",
+                    email: email,
+                    balance: 0
+                });
+            }
+        }
+
+        function depositAccountBalance(existingTran, transaction) {
+            if (existingTran) {
                 console.log("update transaction");
-                transaction.key = tran.key;
+                transaction.key = existingTran.key;
+
                 var defer = $q.defer();
 
-                if (tran.payer) {
-                    accountService.deposit(tran.payer.email, tran.amount)
+                if (existingTran.payer) {
+                    accountService.deposit(existingTran.payer.email, existingTran.amount)
                         .then((account) => {
                             transaction.balance = account.balance;
                             defer.resolve(transaction);
@@ -225,6 +240,35 @@
                     transaction.balance = acc.balance;
                     return self.createOrUpdateTransaction(transaction)
                 });
+        }
+
+        this.getTransactionByOrderKey = (orderKey) => {
+            var defer = $q.defer();
+            var transactions = database.ref("transactions").orderByChild("order/key").equalTo(orderKey).limitToLast(100);
+            transactions.on("value",
+                function (snapshot) {
+                    if (!snapshot.exists()) {
+                        defer.resolve([]);
+                    }
+                    else {
+                        var data = [];
+                        snapshot.forEach(function (childSnapshot) {
+                            var key = childSnapshot.key;
+                            var transaction = childSnapshot.val();
+                            transaction.key = key;
+                            convertService.convertStringToMoment(transaction);
+                            data.push(transaction);
+                        })
+                        //data = _.orderBy(data, "createdDate", "desc");
+                        defer.resolve(data);
+                    }
+                },
+                function (error) {
+                    Alertify.error(error);
+                    defer.reject(error);
+                });
+
+            return defer.promise;
         }
 
         return this;

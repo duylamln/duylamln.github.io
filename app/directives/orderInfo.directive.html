@@ -34,7 +34,7 @@
         </div>
     </form>
 </fieldset>
-<div class="form-group"  ng-if="user.email === 'duylamln@gmail.com'">
+<div class="form-group" ng-if="user.email === 'duylamln@gmail.com'">
     <button type="submit" class="btn btn-danger" ng-click="finishOrder()"
             ng-if="order.status === 'active'">
         Finish Order
@@ -42,5 +42,8 @@
     <button type="submit" class="btn btn-danger" ng-click="unlockOrder()"
             ng-if="order.status === 'locked'">
         Unlock Order
+    </button>
+    <button type="submit" class="btn btn-primary" ng-click="viewOrderTransactions()">
+        View Order Transactions
     </button>
 </div>

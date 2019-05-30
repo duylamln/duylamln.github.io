@@ -1,0 +1,27 @@
+﻿<div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Order Transactions</h4>
+</div>
+<div class="modal-body" id="modal-body">
+    <table class="table none-border-top table-hover">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Desc.</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Payer</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="tran in model.transactions">
+                <td>{{$index + 1}}</td>
+                <td>{{tran.createdDate | momentDate:'DD.MM.YYYY'}}</td>
+                <td>{{tran.desc}}</td>
+                <td>{{tran.method === 'DEPOSIT' ? '+' : '-'}}{{tran.amount | currency: "":0 }}</td>
+                <td>{{tran.payer.displayName}} <small>({{tran.payer.email}})</small></td>
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="model.ok()">OK</button>
+</div>

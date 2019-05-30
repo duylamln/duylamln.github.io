@@ -9,12 +9,14 @@
         setBalance(model.user);
         function setBalance(user) {
             if (!user) return;
-            accountService.subscribeAccountByEmail(user.email, (acc) => $timeout(() => model.balance = acc.balance, 0));
+            accountService.subscribeAccountByEmail(user.email, (acc) => {
+                $timeout(() => model.balance = (acc && acc.balance) || 0, 0);
+            });
         }
         authenService.registerUserStateChangeCallback(function (user) {
             $timeout(() => {
                 model.user = user;
-                setBalance(model.user);        
+                setBalance(model.user);
             });
         })
 

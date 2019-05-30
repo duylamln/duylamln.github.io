@@ -59,7 +59,11 @@
         }
 
         function removeOrderDetail(index) {
-            model.selectedOrder.detail.splice(index, 1)[0];
+            var removedOrderDetail = model.selectedOrder.detail.splice(index, 1)[0];
+
+            if (!model.selectedOrder.removedDetail)
+                model.selectedOrder.removedDetail = [removedOrderDetail];
+            else model.selectedOrder.removedDetail.push(removedOrderDetail);
 
             var updateOrder = angular.copy(model.selectedOrder);
             orderService.updateOrder(updateOrder);

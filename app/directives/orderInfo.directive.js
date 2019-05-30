@@ -1,8 +1,8 @@
 (function (module) {
     "use strict";
     module.directive("orderInfo", orderInfoDirective);
-    orderInfoDirective.$inject = ["orderService", "authenService", "transactionService"];
-    function orderInfoDirective(orderService, authenService, transactionService) {
+    orderInfoDirective.$inject = ["orderService", "authenService", "transactionService", "$q", "$uibModal"];
+    function orderInfoDirective(orderService, authenService, transactionService, $q, $uibModal) {
         var directive = {
             restrict: "E",
             scope: {
@@ -23,7 +23,7 @@
             }
 
             function pushTransactions(order) {
-                if (!order.detail || order.detail.length == 0) return $.when();
+                if (!order.detail || order.detail.length == 0) return $q.when(order);
                 else {
                     var orderDetail = order.detail.shift();
                     return transactionService.pushTransaction(order, orderDetail)
@@ -32,31 +32,88 @@
             }
 
             function removeTransactions(order) {
-                if (!order.detail || order.detail.length == 0) return $.when();
+                if (!order.detail || order.detail.length == 0) return $q.when(order);
                 else {
                     var orderDetail = order.detail.shift();
-                    return transactionService.removeTransactionById(orderDetail.tranId).then(() => removeTransactions(order));
+                    return transactionService.removeTransactionById(orderDetail.tranId)
+                        .then(() => removeTransactions(order));
                 }
-            }           
+            }
 
             scope.finishOrder = () => {
                 var order = scope.order;
                 order.status = "locked";
+
                 if (order.withdrawFromAccountBalance) {
                     console.log("lock order + create transactions");
                     orderService.updateOrder(order)
-                        .then((updatedOrder) => pushTransactions(angular.copy(updatedOrder)));
+                        .then(createOrderTransactions)
+                        .then(removeRemovedDetailTransactions);
                 }
                 else {
                     console.log("lock order + remove transactions");
                     orderService.updateOrder(order)
-                        .then((updatedOrder) => removeTransactions(angular.copy(updatedOrder)));
+                        .then(removeOrderTransactions)
+                        .then(removeRemovedDetailTransactions);
+                }
+            }
+
+            function createOrderTransactions(order) {
+                var defer = $q.defer();
+                var copiedOrder = angular.copy(order);
+
+                pushTransactions(copiedOrder)
+                    .then(() => defer.resolve(order), defer.reject);
+
+                return defer.promise;
+            }
+
+            function removeOrderTransactions(order) {
+                var defer = $q.defer();
+                var copiedOrder = angular.copy(order);
+
+                removeTransactions(copiedOrder)
+                    .then(() => defer.resolve(order), defer.reject);
+
+                return defer.promise;
+            }
+
+            function removeRemovedDetailTransactions(order) {
+                if (!order.removedDetail || order.removedDetail.length === 0) return $q.when(order);
+                else {
+                    var removedDetail = order.removedDetail.shift();
+                    return transactionService.removeTransactionById(removedDetail.tranId)
+                        .then(() => removeRemovedDetailTransactions(order));
                 }
             }
 
             scope.unlockOrder = () => {
                 scope.order.status = "active";
                 orderService.updateOrder(scope.order);
+            }
+
+            scope.viewOrderTransactions = () => {
+                transactionService.getTransactionByOrderKey(scope.order.key)
+                    .then(showInModal);
+            }
+
+            function showInModal(trans) {
+                $uibModal.open({
+                    animation: false,
+                    ariaLabelledBy: "modal-title",
+                    ariaDescribedBy: "modal-body",
+                    templateUrl: "app/controllers/orderTransactionModal.controller.html",
+                    controller: "OrderTransactionModalController",
+                    controllerAs: "model",
+                    size: "lg",
+                    backdrop: "static",
+                    resolve: {
+                        transactions: function () {
+                            return trans;
+                        }
+                    }
+                });
+
             }
         }
     }
