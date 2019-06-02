@@ -87,7 +87,7 @@
                     }
                     else {
                         Alertify.success("Timesheet saved!");
-                        defer.resolve();
+                        defer.resolve(datapost);
                     }
                 });
             return defer.promise;

@@ -194,7 +194,8 @@
 
         function saveTimesheet() {
             calculateTimesheet();
-            timesheetService.saveTimesheet(model.week).then(function () {
+            timesheetService.saveTimesheet(model.week).then(function (week) {
+                model.week.key = week.key;
                 model.totalHours = calculateWeekTotalHours(model.week);
             });
         }
