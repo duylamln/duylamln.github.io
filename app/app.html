@@ -1,22 +1,24 @@
-<nav class="nav">
-  <a class="nav-link" ui-sref-active="active" ui-sref="main.sprint">Sprint</a>
-  <a class="nav-link" ui-sref-active="active" ui-sref="main.timesheet">Timesheet</a>
-  <a class="nav-link" ui-sref-active="active" ui-sref="main.bank"
-    ng-if="model.user.email == 'duylamln@gmail.com'">Bank</a>
-  <a class="nav-link" ui-sref-active="active" ui-sref="main.order">Order</a>
-  <a class="nav-link" ui-sref-active="active" ui-sref="main.login({returnState: $root.$state.current.name})"
-    ng-if="!model.user">
-    Sign In / Sign Up
-  </a>
-  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown"
-    aria-haspopup="true" aria-expanded="false" ng-if="model.user">
-    {{model.user.displayName}} ({{model.balance | currency:"":0}})
-  </a>
-  <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-    <a class="dropdown-item" ui-sref="main.account">Account</a>
-    <a class="dropdown-item" ng-click="model.logOut()">Log Out</a>
-  </div>
-</nav>
-<div class="container-fluid" style="margin-top: 40px;">
-  <div ui-view class="page"></div>
+<div>
+    <nav class="nav sticky-top navbar-fixed-top" style="margin-left: 20px;background-color: white;">
+        <a class="nav-link" ui-sref-active="active" ui-sref="main.sprint">Sprint</a>
+        <a class="nav-link" ui-sref-active="active" ui-sref="main.timesheet">Timesheet</a>
+        <a class="nav-link" ui-sref-active="active" ui-sref="main.bank"
+           ng-if="model.user.email == 'duylamln@gmail.com'">Bank</a>
+        <a class="nav-link" ui-sref-active="active" ui-sref="main.order">Order</a>
+        <a class="nav-link" ui-sref-active="active" ui-sref="main.login({returnState: $root.$state.current.name})"
+           ng-if="!model.user">
+            Sign In / Sign Up
+        </a>
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown"
+           aria-haspopup="true" aria-expanded="false" ng-if="model.user">
+            {{model.user.displayName}} ({{model.balance | currency:"":0}})
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            <a class="dropdown-item" ui-sref="main.account">Account</a>
+            <a class="dropdown-item" ng-click="model.logOut()">Log Out</a>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <div ui-view class="page"></div>
+    </div>
 </div>
