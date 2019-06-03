@@ -84,7 +84,7 @@
 
         function goToOrderDetail() {
             if (!model.selectedOrder) return;
-            return $state.go("main.orderDetail", { key: model.selectedOrder.key });
+            $state.go("main.orderDetail", { key: model.selectedOrder.key });
         }
 
         function calculateOrderPrice() {
