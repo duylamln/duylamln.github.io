@@ -88,7 +88,37 @@ myApp.config(["$stateProvider", "$urlRouterProvider", "$mdAriaProvider", functio
         controller: "BankController",
         controllerAs: "model",
         requiredAuth: true
-    });
+    });   
+}]);
+
+myApp.config(['$httpProvider', '$provide', function ($httpProvider, $provide) {
+    $provide.factory('commonInterceptor', ["$q", "$timeout", "authenService", function ($q, $timeout, authenService) {
+        var user = authenService.getCurrentUser();
+
+        return {
+            // On request success
+            request: function (config) {
+                if (user) {
+                    config.headers.email = user.email;
+                }
+                return config || $q.when(config);
+            },
+            // On request failure
+            requestError: function (rejection) {
+                return $q.reject(rejection);
+            },
+            // On response success
+            response: function (response) {
+                return response || $q.when(response);
+            },
+            // On response failture
+            responseError: function (rejection) {
+                return $q.reject(rejection);
+            }
+        };
+    }]);
+
+    $httpProvider.interceptors.push('commonInterceptor');
 }]);
 
 myApp.run(["$rootScope", "Alertify", "$state", "$transitions", "authenService", function ($rootScope, Alertify, $state, $transitions, authenService) {

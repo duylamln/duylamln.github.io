@@ -7,12 +7,13 @@
         model.saveUserProfile = saveUserProfile;
 
         setUser = (user) => {
-            var { displayName, email, photoURL, phoneNumber } = user;
+            var { displayName, email, photoURL, phoneNumber, account } = user;
             model.user = {
                 email: email,
                 displayName: displayName,
                 photoURL: photoURL,
-                phoneNumber: phoneNumber
+                phoneNumber: phoneNumber,
+                account: account
             };
             return $q.when(model.user);
         };
@@ -20,25 +21,26 @@
         activate();
 
         function activate() {
-            var currentUser = authenService.getCurrentUser();
-            setUser(currentUser)
-                .then((user) => {
-                    return accountService.getAccountByEmail(user.email)
-                })
-                .then(account => model.balance = account.balance);
-
-            transactionService.getTransactionByEmail(currentUser.email, (trans) => {
-                $timeout(() => {
-                    model.transactions = trans;
-                }, 0);
-            }); 
-
+            authenService.getCurrentUserWithAccount()
+                .then(setUser)
+                .then((currentUser) => {
+                    transactionService.getTransactionByEmail(currentUser.email, (trans) => {
+                        $timeout(() => {
+                            model.transactions = trans;
+                        }, 0);
+                    });
+                });
         }
-
 
         function saveUserProfile() {
             authenService.updateUserProfile(angular.copy(model.user))
-                .then(setUser);
+                .then(setUser)
+                .then(updateAccount);
+        }
+
+        function updateAccount(user) {
+            var { account } = user;
+            accountService.createOrUpdateAccount(account);
         }
     }
 })(angular.module("myApp"));

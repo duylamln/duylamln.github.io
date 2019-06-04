@@ -1,7 +1,7 @@
 (function (module) {
     module.service("authenService", authenService);
-    authenService.$inject = ["$state", "$q", "Alertify"];
-    function authenService($state, $q, Alertify) {
+    authenService.$inject = ["$state", "$q", "Alertify", "accountService"];
+    function authenService($state, $q, Alertify, accountService) {
         var self = this;
         self.initialize = initialize;
         self.logIn = logIn;
@@ -11,6 +11,23 @@
         self.registerUserStateChangeCallback = registerUserStateChangeCallback;
         self.updateUserProfile = updateUserProfile;
         self.getCurrentUser = () => firebase.auth().currentUser;
+
+        self.getCurrentUserWithAccount = () => {
+            var defer = $q.defer();
+            var user = firebase.auth().currentUser;
+            if (user) {
+                accountService.getAccountByEmail(user.email)
+                    .then(acc => {
+                        user.account = acc;
+                        defer.resolve(user);
+                    }, defer.reject);
+            }
+            else {
+                defer.resolve(undefined);
+            }
+
+            return defer.promise;
+        }
 
         function initialize() {
             self.ui = new firebaseui.auth.AuthUI(firebase.auth());
@@ -96,6 +113,7 @@
             }).then(
                 () => {
                     Alertify.success("User profile has been updated successfully.")
+                    currentUser.account = user.account;
                     defer.resolve(currentUser);
                     self.user = currentUser;
                 },
