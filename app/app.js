@@ -100,6 +100,7 @@ myApp.config(['$httpProvider', '$provide', function ($httpProvider, $provide) {
             request: function (config) {
                 if (user) {
                     config.headers.email = user.email;
+                    config.headers.uid = user.uid;
                 }
                 return config || $q.when(config);
             },
