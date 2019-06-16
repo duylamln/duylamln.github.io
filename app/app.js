@@ -88,7 +88,23 @@ myApp.config(["$stateProvider", "$urlRouterProvider", "$mdAriaProvider", functio
         controller: "BankController",
         controllerAs: "model",
         requiredAuth: true
-    });   
+    });  
+    $stateProvider.state({
+        name: "main.admin",
+        url: "/admin",
+        templateUrl: "app/controllers/admin.controller.html",
+        controller: "AdminController",
+        controllerAs: "model",
+        requiredAuth: true
+    });  
+    $stateProvider.state({
+        name: "main.admin.master",
+        url: "/master",
+        templateUrl: "app/controllers/adminMaster.controller.html",
+        controller: "AdminMasterController",
+        controllerAs: "model",
+        requiredAuth: true
+    }); 
 }]);
 
 myApp.config(['$httpProvider', '$provide', function ($httpProvider, $provide) {
