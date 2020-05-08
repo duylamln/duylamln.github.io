@@ -1,4 +1,5 @@
-<h4>Account List</h4>
+<h4>Account List <span class="text-dark" ng-if="SumBalance(accounts) > 0" >- Total: {{SumBalance(accounts) | currency: "":0}} VND</span> </h4>
+
 <table class="table none-border-top table-hover">
     <thead>
         <tr>
@@ -10,8 +11,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="account in accounts" ng-click="toggleAccount(account)"
-            ng-class="{'table-active': selectedAccount.key === account.key}">
+        <tr ng-repeat="account in accounts" ng-click="toggleAccount(account)" ng-class="{'table-active': selectedAccount.key === account.key}">
             <td>{{$index + 1}}</td>
             <td>{{account.name}}</td>
             <td>{{account.email}}</td>
@@ -21,5 +21,6 @@
                    confirm-click="Are you sure to delete this account ?" confirmed-click="removeAccount(account)"></i>
                 <i class="fas fa-money-check-alt" role="button" tabindex="0" ng-click="viewTransactions(account, $event)"></i>
             </td>
+        </tr>
     </tbody>
 </table>

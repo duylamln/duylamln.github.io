@@ -28,6 +28,13 @@
                 }
             };
 
+            scope.SumBalance = (account) =>{
+                console.log();
+                return _.sumBy(account,'balance');
+            }
+
+
+
             scope.removeAccount = (account) => {
                 accountService.removeAccount(account).then(() => {
                     if (scope.selectedAccount) {

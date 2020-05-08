@@ -60,6 +60,7 @@
 
             calculateTotalPrice(datapost);
             calculateDiscount(datapost);
+            calculateTransactionStatus(datapost);
 
             if (!datapost.key) datapost.key = database.ref().child("orders").push().key;
             database.ref("orders/" + datapost.key)
@@ -74,6 +75,16 @@
                     }
                 });
             return defer.promise;
+        }
+
+        function calculateTransactionStatus(order){
+            order.detail = order.detail || [];
+
+            if(order.withdrawFromAccountBalance){
+                _.each(order.detail, function (item) {
+                    item.transactionStatus = item.createdUser != undefined;
+                });
+            }
         }
 
         function calculateDiscount(order) {

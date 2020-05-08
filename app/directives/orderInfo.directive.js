@@ -26,8 +26,11 @@
                 if (!order.detail || order.detail.length == 0) return $q.when(order);
                 else {
                     var orderDetail = order.detail.shift();
-                    return transactionService.pushTransaction(order, orderDetail)
+                    if(orderDetail.createdUser){
+                        return transactionService.pushTransaction(order, orderDetail)
                         .then(() => pushTransactions(order));
+                    }
+                    else pushTransactions(order);
                 }
             }
 
