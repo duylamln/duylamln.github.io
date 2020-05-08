@@ -35,8 +35,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="orderDetail in model.selectedOrder.detail">
-                                    <td>{{$index + 1}}</td>
+                                <tr ng-repeat="orderDetail in model.selectedOrder.detail" ng-class="{'table-danger': model.selectedOrder.withdrawFromAccountBalance && !orderDetail.transactionStatus}">
+                                    <td  >{{$index + 1}}</td>
                                     <td>{{orderDetail.name}}</td>
                                     <td>{{orderDetail.desc}}</td>
                                     <td>{{orderDetail.price | currency: "":0}}</td>
@@ -52,7 +52,6 @@
                                 <tr ng-if="model.selectedOrder.detail && model.selectedOrder.detail.length > 0">
                                     <td colspan="3" class="text-center">Total</td>
                                     <td>{{model.selectedOrder.totalPrice | currency: "":0 }}</td>
-                                    <!--<td>{{model.selectedOrder.totalDiscountPrice | currency: "":0 }}</td>-->
                                     <td>{{model.selectedOrder.totalDiscountedPrice | currency: "":0 }}</td>
                                 </tr>
                                 <tr ng-if="model.selectedOrder.detail && model.selectedOrder.detail.length > 0">
@@ -60,7 +59,6 @@
                                     </td>
                                     <td><strong>{{model.selectedOrder.totalPriceWithShippingFee | currency: "":0 }}</strong>
                                     </td>
-                                    <!--<td></td>-->
                                     <td><strong>{{model.selectedOrder.totalDiscountedPriceWithShippingFee | currency: "":0 }}</strong>
                                     </td>
                                     <td><strong>{{model.selectedOrder.totalFinalPrice | currency: "":0 }}</strong></td>
